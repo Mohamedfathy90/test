@@ -1,0 +1,487 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 300;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+@media (max-width: 768px) {
+  .navbar-collapse {
+    display: none;
+  }
+
+  .navbar-collapse.show {
+    display: block;
+  }
+}
+/* القائمة الجانبية */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -250px;
+  width: 250px;
+  height: 100%;
+  background-color: white;
+  color: black;
+  z-index: 1050;
+  transition: right 0.3s ease-in-out;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  padding-top: 60px;
+}
+
+.sidebar.open {
+  right: 0;
+}
+
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.side-link {
+  text-decoration: none;
+  color: black;
+  margin: 10px 0;
+  font-weight: 500;
+}
+
+.side-link:hover {
+  color: #007bff;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1040;
+}
+.beauty-section {
+  max-width: 900px; 
+  margin: 40px auto;
+  text-align: center;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 300;
+  color: #4c4c4c;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.beauty-link {
+  display: inline-block;
+  font-size: 18px;
+  color: #888;
+  text-decoration: none;
+  margin-bottom: 10px;
+  transition: color 0.3s ease;
+ 
+}
+
+.beauty-link:hover {
+  color: #333;
+  
+}
+.beauty-sect{
+  color: #000;
+  font-weight: bold;
+}
+
+.beauty-text {
+  font-size: 16px;
+  line-height: 2;
+  margin-top: 10px;
+  max-height: 4.2em; /* تقريبًا سطرين */
+  overflow: hidden;
+  position: relative;
+  transition: max-height 0.4s ease;
+}
+
+.beauty-text.expanded {
+  max-height: 1000px;
+}
+
+.read-more-btn {
+  margin-top: 0px;
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+}
+/*card*/
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 50px;
+
+}
+
+.card1 {
+  width: 250px;
+  padding: 10px;
+  position: relative;
+  transition: transform 0.2s;
+  font-family: 'Tajawal', sans-serif;
+
+  
+
+}
+.linkCard{
+  display: flex;
+  flex-direction: column;
+}
+
+.image-wrapper {
+ 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* ظل ناعم */
+  position: relative;
+
+  margin-bottom: 10px;
+}
+
+.image-container {
+  position: relative;
+}
+
+.main-image {
+  width: 100%;
+  border-radius: 8px;
+  
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px; /* استبدله بـ left: 10px; لو بدك على اليسار */
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* حجم الأيقونة */
+.heart-icon {
+  font-size: 15px; /* تكبير الحجم */
+  color: #ccc; /* فارغ */
+  transition: 0.3s ease;
+}
+
+.heart-icon.filled {
+  color: red; /* عند التفضيل */
+}
+
+
+.rating {
+  color: #f39c12;
+  font-size: 18px;
+}
+select.select{
+  width: 300px;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 300;
+}
+.downHeader{
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 300;
+}
+a.Sali{
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  font-size: x-small;
+}
+a{
+  text-decoration: none !important;
+
+}
+.cards-container a.aCard {
+  color: #000;
+  font-weight: 400;
+  font-size: 16px;
+}
+.cards-container  span.khsom{
+  color: #bc1907;
+  font-weight: 500;
+  font-size: 13px;
+  
+  
+}
+
+.custom-icon {
+  width: 26px;
+  height: 26px;
+  position: absolute;
+  top: 10px;
+  right: 5px; 
+  
+}
+.product-detail-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  padding: 30px;
+}
+
+.image-scroll {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+.detail-image {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.product-info {
+  flex: 2;
+  min-width: 300px;
+}
+
+.price-section {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  font-size: 18px;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.discounted-price {
+  color: green;
+  font-weight: bold;
+}
+
+.discount-rate {
+  color: red;
+}
+
+.size-selector button {
+  margin: 10px 10px 10px 0;
+  padding: 8px 16px;
+  border: 1px solid #000;
+  background: #fff;
+  cursor: pointer;
+}
+
+.size-selector .selected {
+  background-color: black;
+  color: white;
+}
+
+.social-share {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.share-icon {
+  font-size: 24px;
+  cursor: pointer;
+  color: #555;
+}
+
+.add-to-cart {
+  background-color: #000;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+.product-detail{
+  display: flex;
+  justify-items: center;
+  justify-content:space-between;
+  margin-top: 50px;
+  flex-wrap: wrap;
+  font-family: 'Tajawal', sans-serif;
+}
+.product-detail .imgDiteal {
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+ 
+  width: 60%;
+}
+.product-detail .imgDiteal img{
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 60%;
+}
+span.Sali{
+  font-size: x-small;
+}
+.cart-container {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f4f4f4;
+  display: flex;
+  
+  flex-wrap: wrap;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.cart-item-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.cart-item-details {
+  flex-grow: 1;
+  padding-left: 20px;
+}
+
+.cart-item-quantity {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.cart-item-quantity button {
+  background-color: #ccc;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cart-item-quantity button:hover {
+  background-color: #bbb;
+}
+
+.remove-item-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.remove-item-btn:hover {
+  background-color: #c0392b;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+.checkout-btn {
+  padding: 10px 20px;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.checkout-btn:hover {
+  background-color: #2ecc71;
+}
+button.ButtonDelav{
+  border: 0;
+  margin-bottom: 20px;
+}
+.cart-container{
+  font-family: 'Tajawal', sans-serif;
+}
+.TopFooter{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  justify-items: center;
+  
+}
+.TopFooter img{
+  width: 300PX;
+  margin-right: 100px;
+}
+.SochialFooter{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  justify-items: center;
+  gap: 10PX;
+  margin-left: 100px;
+  margin-top: 30px;
+}
+.TowFooter2{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 100px;
+  margin-right: 50px;
+  margin-top: 50px;
+}
+.TowFooter{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+.TowFooter ul li{
+      list-style: none;
+      padding-top: 15px;
+}
+.TowFooter ul li a{
+  color: #000;
+}
+footer{
+   font-family: 'Tajawal', sans-serif;
+}
