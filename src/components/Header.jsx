@@ -1,15 +1,27 @@
-import React, { useState , useEffect} from "react";
-import { Container, Row, Col, Form, InputGroup, Button } from "react-bootstrap";
-import { FaUser, FaShoppingCart, FaSearch, FaBars } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useUser } from "../context/context";
+import { useFavorites } from "../context/FavoritesContext";
+import { RiMenu3Line } from "react-icons/ri";
+import { IoMdHeartEmpty } from "react-icons/io";
+import { HiOutlineSearch } from "react-icons/hi";
+import CartIcon from "../components/CartIcon";
 
 
 const categories = [
   { label: "تخفيضات", href: "#" },
-  { label: "العطلات بوتيك", href: "https://bloomingdales.com.kw/bloomingdales-resort/" },
+  {
+    label: "العطلات بوتيك",
+    href: "https://bloomingdales.com.kw/bloomingdales-resort/",
+  },
   { label: "حديثاً وصلنا ما", href: "https://bloomingdales.com.kw/new-in/" },
   { label: "النساء", href: "https://bloomingdales.com.kw/women/" },
-  { label: "الحقائب ", href: "https://bloomingdales.com.kw/bloomingdales-new-season-women/?prefn1=categorytype&prefv1=%D8%AD%D9%82%D8%A7%D8%A6%D8%A8" },
+  {
+    label: "الحقائب ",
+    href: "https://bloomingdales.com.kw/bloomingdales-new-season-women/?prefn1=categorytype&prefv1=%D8%AD%D9%82%D8%A7%D8%A6%D8%A8",
+  },
   { label: "الجمال ", href: "https://bloomingdales.com.kw/beauty/" },
   { label: "الرجال", href: "https://bloomingdales.com.kw/men/" },
   { label: "الأطفال", href: "https://bloomingdales.com.kw/kids/" },
@@ -19,10 +31,12 @@ const categories = [
   { label: " المصممون", href: "https://bloomingdales.com.kw/designers/" },
 ];
 
-
-const Header = ({ user }) => {
+const Header = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userRole, setUserRole] = useState(null);
+  const [setUserRole] = useState(null);
+  const { cartCount } = useCart();
+  const { user } = useUser();
+  const { favoritesCount } = useFavorites();
 
   useEffect(() => {
     fetch("https://blomengdalis-tester.com/backend/check-session.php")
@@ -36,26 +50,45 @@ const Header = ({ user }) => {
 
   return (
     <>
-      <header className="bg-white border-bottom container">
-        {/* الجزء العلوي */}
-        <Container fluid className="py-2">
-          <Row className="align-items-center text-black">
-          <Col xs={4} md={3} className="d-flex justify-content-end align-items-center">
-              <InputGroup size="sm" className="d-none d-md-flex">
-                <Form.Control placeholder="بحث..." />
-                <InputGroup.Text>
-                  <FaSearch />
-                </InputGroup.Text>
-              </InputGroup>
+      <header className="bg-white">
+        <Container fluid style={{ maxWidth: "95%" }} className="py-2">
+          <Row className="align-items-center">
+            <Col
+              md={3}
+              className="d-none d-md-flex justify-content-start align-items-center border-bottom"
+            >
+              <HiOutlineSearch size={24} className="me-2" />
+              <Form className="w-100">
+                <Form.Control
+                  type="text"
+                  placeholder="بحث..."
+                  style={{ boxShadow: "none", borderRadius: 0, border: "none" }}
+                />
+              </Form>
+            </Col>
+
+            <Col
+              xs={4}
+              className="d-flex d-md-none justify-content-start align-items-center"
+            >
               <Button
-                variant="light"
-                className="d-md-none ms-2"
+                className="d-md-none ms-2 border-0 menu-btn bg-transparent text-black"
                 onClick={() => setSidebarOpen(true)}
               >
-                <FaBars />
+                <RiMenu3Line size={25} />
+              </Button>
+              <Button
+                className="border-0 search-btn bg-transparent text-black"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <HiOutlineSearch size={25} />
               </Button>
             </Col>
-            <Col xs={4} md={6} className="text-center">
+            <Col
+              xs={4}
+              md={6}
+              className="d-flex justify-content-center align-items-center"
+            >
               <img
                 src="/logo.jpg"
                 alt="Logo"
@@ -63,34 +96,55 @@ const Header = ({ user }) => {
                 style={{ maxHeight: "80px" }}
               />
             </Col>
-            
-            <Col xs={4} md={3} className="d-flex gap-3 justify-content-start">
-            <Link to="/cart" style={{color:"#000"}}>
-            <FaShoppingCart size={25} />
-             </Link>
-           <Link to="/Login" style={{color:"#000"}}>
-           <FaUser size={25} style={{color:"#000"}}/>
+
+            <Col
+              xs={4}
+              md={3}
+              className="d-flex justify-content-end align-items-center gap-2"
+            >
+              <Link to="/Favorites" className="position-relative text-black">
+                <IoMdHeartEmpty size={25} />
+                {favoritesCount > 0 && (
+                  <span
+                    className="position-absolute bg-black text-white rounded-circle d-flex align-items-center justify-content-center"
+                    style={{
+                      width: "18px",
+                      height: "18px",
+                      top: "-8px",
+                      right: "-8px",
+                      fontSize: "10px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {favoritesCount}
+                  </span>
+                )}
               </Link>
+
+              <Link to="/cart" className="position-relative text-black">
+              </Link>
+              <CartIcon cartCount={cartCount} />
             </Col>
-             {/* زر الداشبورد يظهر فقط لو الأدمن مسجل دخول */}
-      {user && user.is_admin === 1 && (
-          <Link to="/admin-dashboard" className="admin-btn">لوحة التحكم</Link>
-        )}
-          
+
+            {user && user.is_admin === 1 && (
+              <Link to="/admin-dashboard" className="admin-btn">
+                لوحة التحكم
+              </Link>
+            )}
           </Row>
         </Container>
 
-        {/* الجزء السفلي للشاشات الكبيرة */}
-        <div className="bg-white text-black d-none d-md-block border-top downHeader">
-          <Container fluid>
+      {/* قائمة الفئات */}
+        <div className="bg-white text-black d-none d-md-block border-bottom downHeader">
+          <Container style={{ maxWidth: "95%" }} fluid>
             <Row>
               <Col>
-                <nav className="d-flex flex-wrap justify-content-center py-2">
+                <nav className="d-flex flex-wrap justify-content-between py-2">
                   {categories.map((cat, idx) => (
                     <a
                       key={idx}
                       href={cat.href}
-                      className="mx-3 my-1 text-black text-decoration-none"
+                      className="text-black text-decoration-none"
                     >
                       {cat.label}
                     </a>
@@ -102,9 +156,11 @@ const Header = ({ user }) => {
         </div>
       </header>
 
-      {/* القائمة الجانبية */}
+      {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-        <button className="close-btn" onClick={() => setSidebarOpen(false)}>×</button>
+        <button className="close-btn" onClick={() => setSidebarOpen(false)}>
+          ×
+        </button>
         <nav className="side-nav">
           {categories.map((cat, idx) => (
             <a key={idx} href={cat.href} className="side-link">
@@ -113,9 +169,9 @@ const Header = ({ user }) => {
           ))}
         </nav>
       </div>
-
-      {/* خلفية شفافة تغلق القائمة عند الضغط */}
-      {sidebarOpen && <div className="overlay" onClick={() => setSidebarOpen(false)}></div>}
+      {sidebarOpen && (
+        <div className="overlay" onClick={() => setSidebarOpen(false)}></div>
+      )}
     </>
   );
 };

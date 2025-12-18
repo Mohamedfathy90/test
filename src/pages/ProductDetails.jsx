@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';  // إضافة useNavigate
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import FooterSection from '../components/FooterSection';
 import ProductButtons from '../components/ProductButtons';
+import { useUser } from '../context/context';
+import { useCart } from '../context/CartContext';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
-  const navigate = useNavigate();  // إضافة useNavigate للتنقل بعد إضافة المنتج
+  const navigate = useNavigate();
+  const { user } = useUser();
+  const { updateCartCount } = useCart();
 
-  // تقسيم الحجمين إذا كانت هناك قيمة مفصولة بفاصلة
   const sizes = product?.sizes ? product.sizes.split(', ') : [];
-  
-  // ثابت مؤقت لمعرّف المستخدم
-  const userId = 1;
 
   // جلب البيانات عند تحميل الصفحة
   useEffect(() => {
@@ -24,42 +24,40 @@ const ProductDetail = () => {
       .catch((err) => console.error("Error fetching product:", err));
   }, [id]);
 
-  // وظيفة لإضافة المنتج إلى السلة
   const addToCart = async () => {
-  if (!selectedSize) {
-    alert("يرجى اختيار الحجم أولاً");
-    return;
-  }
-
-  console.log("🟢 الحجم المحدد:", selectedSize); // تأكد إنه فعلاً واصل
-
- try {
-  const response = await axios.post(
-    "https://blomengdalis-tester.com/backend/add_to_cart.php",
-    {
-      user_id: userId,
-      product_id: product.id,
-      quantity: 1,
-      size: selectedSize,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
+    if (!user) {
+      navigate('/login');
+      return;
     }
-  );
 
-  console.log('Server response:', response.data);
-  
-  alert(response.data.message || "تمت العملية بدون رسالة");
-  
-  // ✅ انتقل إلى صفحة السلة بعد الضغط موافق
-  navigate('/cart');
+    if (!selectedSize) {
+      alert("يرجى اختيار الحجم أولاً");
+      return;
+    }
 
-} catch (error) {
-  console.error(error);
-  alert("❌ فشل في إضافة المنتج إلى السلة");
-}
+    try {
+      const response = await axios.post(
+        "https://blomengdalis-tester.com/backend/add_to_cart.php",
+        {
+          user_id: user.id,
+          product_id: product.id,
+          quantity: 1,
+          size: selectedSize,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      alert(response.data.message || "تم إضافة المنتج للسلة");
+      updateCartCount();
+      navigate('/cart');
+    } catch (error) {
+      console.error(error);
+      alert("❌ فشل في إضافة المنتج إلى السلة");
+    }
   }
 
   if (!product) return <div>Loading...</div>;
