@@ -1,123 +1,267 @@
 import React from "react";
+import axios from "axios";
+import { useFavorites } from "../context/FavoritesContext";
+import { IoIosInformationCircleOutline } from "react-icons/io";
 
 const ItemCart = ({ item, removeItem, updateQuantity }) => {
   const totalPrice = (item.price_after * item.quantity).toFixed(3);
+  const { fetchFavoritesCount } = useFavorites();
+
+  const getSessionId = () => {
+    let sessionId = localStorage.getItem("session_id");
+    if (!sessionId) {
+      sessionId =
+        "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem("session_id", sessionId);
+    }
+    return sessionId;
+  };
+
+  const handleAddToWishlist = async () => {
+    const sessionId = getSessionId();
+    try {
+      await axios.post(
+        "https://blomengdalis-tester.com/backend/toggle_favorite.php",
+        {
+          session_id: sessionId,
+          product_id: item.product_id,
+          action: "add",
+        }
+      );
+      alert("تم إضافة المنتج إلى قائمة الأمنيات");
+      fetchFavoritesCount();
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      alert("❌ فشل في إضافة المنتج إلى قائمة الأمنيات");
+    }
+  };
 
   return (
-    <div className="border-b pb-6 mb-6">
-      <div className="flex gap-6 items-start">
-        {/* Product Image - Right Side */}
-        <div className="flex-shrink-0">
-          <img
-            src={`https://blomengdalis-tester.com/backend/uploads/${item.main_image}`}
-            alt={item.name}
-            className="w-48 h-64 object-contain bg-white"
-          />
+    <div className="border-b border-gray-200 py-6" dir="rtl">
+      <div className="grid grid-cols-12 gap-x-6 gap-y-4">
+        {/* ================= MOBILE LAYOUT ================= */}
+        <div className="col-span-12 md:hidden">
+          <div className="flex items-start gap-4">
+            {/* Image Column */}
+            <div className="w-24 h-32 flex-shrink-0">
+              <img
+                src={`https://blomengdalis-tester.com/backend/uploads/${item.main_image}`}
+                alt={item.name}
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            {/* All Info Column */}
+            <div className="flex-1">
+              {/* Title + X button */}
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <h3 className="text-title flex-1">{item.name}</h3>
+                <button
+                  onClick={() => removeItem(item.product_id)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors p-1 flex-shrink-0"
+                >
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M15 5L5 15M5 5l10 10" />
+                  </svg>
+                </button>
+              </div>
+
+              <p className="text-paragraph mb-2">{item.description}</p>
+
+              <div className="flex items-center gap-1 mb-2">
+                <span className="text-small">معرّف المنتج:</span>
+                <span className="text-small-dark">{item.product_id}</span>
+              </div>
+
+              <p className="text-medium-dark mb-3">KWD {totalPrice}</p>
+
+              {/* Size + Quantity Controls in one row */}
+              <div className="flex items-center justify-between mb-3">
+                {/* Size */}
+                <div className="text-small-dark underline underline-offset-2">
+                  {item.size || "لا حجم"}
+                </div>
+
+                {/* Quantity Controls */}
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => updateQuantity(item.product_id, "decrement")}
+                    disabled={item.quantity <= 1}
+                    className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                  </button>
+                  <span className="text-almarai text-lg font-medium text-gray-900 min-w-[32px] text-center">
+                    {item.quantity}
+                  </span>
+                  <button
+                    onClick={() => updateQuantity(item.product_id, "increment")}
+                    className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-all"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Non-refundable notice */}
+              <div className="color-box px-4 py-3 flex items-center justify-center gap-2 mb-3 border-box">
+                <IoIosInformationCircleOutline
+                  className="text-[#346596] flex-shrink-0"
+                  size={20}
+                />
+                <span className="text-small">منتج غير قابل للاسترداد</span>
+              </div>
+
+              {/* Add to wishlist */}
+              <div className="text-end">
+                <button
+                  onClick={handleAddToWishlist}
+                  className="text-paragraph underline underline-offset-4"
+                >
+                  أضف إلى قائمة الأمنيات
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Product Info and Controls - Left Side */}
-        <div className="flex-1 text-right">
-          {/* Delete Button */}
-          <div className="mb-4">
-            <button
-              onClick={() => removeItem(item.product_id)}
-              className="text-gray-400 hover:text-black transition-colors"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Product Name and Brand */}
-          <h3 className="text-2xl font-normal mb-1">{item.name}</h3>
-          <p className="text-base text-gray-700 mb-3">{item.description}</p>
-
-          {/* Product ID */}
-          <p className="text-sm text-gray-400 mb-4">
-            معرّف المنتج: {item.product_id}
-          </p>
-
-          {/* Price */}
-          <div className="text-xl font-semibold mb-6">KWD {totalPrice}</div>
-
-          {/* Size and Quantity Controls - Horizontal Row */}
-          <div className="flex items-center gap-6 mb-6">
-            {/* Size */}
-            <div>
-              <span className="text-base font-normal underline decoration-1 underline-offset-4">
-                {item.size}
-              </span>
-            </div>
-
-            {/* Quantity Controls */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => updateQuantity(item.product_id, "increment")}
-                className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M8 3v10M3 8h10" strokeLinecap="round" />
-                </svg>
-              </button>
-
-              <span className="text-base font-normal">{item.quantity}</span>
-
-              <button
-                onClick={() => updateQuantity(item.product_id, "decrement")}
-                disabled={item.quantity <= 1}
-                className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <svg
-                  width="14"
-                  height="2"
-                  viewBox="0 0 16 3"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M3 1.5h10" strokeLinecap="round" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Out of Stock Notice */}
-          <div className="bg-blue-50 border border-blue-200 rounded p-3 mb-4 flex items-start gap-2 max-w-md">
-            <svg
-              className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clipRule="evenodd"
+        {/* ================= DESKTOP LAYOUT (UNCHANGED) ================= */}
+        <div className="hidden md:contents">
+          {/* صورة المنتج */}
+          <div className="col-span-4 md:col-span-3 flex items-start justify-center sm:justify-start">
+            <div className="w-40 h-40">
+              <img
+                src={`https://blomengdalis-tester.com/backend/uploads/${item.main_image}`}
+                alt={item.name}
+                className="w-full h-full object-contain"
               />
-            </svg>
-            <span className="text-sm text-blue-800">
-              منتج غير قابل للاسترداد
-            </span>
+            </div>
           </div>
 
-          {/* Add to Wishlist Link */}
-          <button className="text-base text-gray-700 underline hover:text-black decoration-1 underline-offset-4">
-            أضف إلى قائمة الأمنيات
-          </button>
+          {/* تفاصيل المنتج */}
+          <div className="col-span-7 md:col-span-4 text-right flex flex-col justify-start">
+            <h3 className="text-title mb-3">{item.name}</h3>
+            <p className="text-paragraph mb-3">{item.description}</p>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-small">معرّف المنتج:</span>
+              <span className="text-small-dark">{item.product_id}</span>
+            </div>
+            <p className="text-medium-dark">KWD {totalPrice}</p>
+          </div>
+
+          {/* العمليات والأزرار */}
+          <div className="col-span-12 md:col-span-5">
+            {/* الصف الأول */}
+            <div className="flex items-center justify-between mb-4 gap-2">
+              {/* الحجم */}
+              <div className="text-small-dark underline underline-offset-2 flex-shrink-0">
+                {item.size || "لا حجم"}
+              </div>
+
+              {/* أزرار الكمية */}
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <button
+                  onClick={() => updateQuantity(item.product_id, "decrement")}
+                  disabled={item.quantity <= 1}
+                  className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+
+                <span className="text-almarai text-base font-medium text-gray-900 min-w-[24px] text-center">
+                  {item.quantity}
+                </span>
+
+                <button
+                  onClick={() => updateQuantity(item.product_id, "increment")}
+                  className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-all"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* حذف المنتج */}
+              <button
+                onClick={() => removeItem(item.product_id)}
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1 flex-shrink-0"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M15 5L5 15M5 5l10 10" />
+                </svg>
+              </button>
+            </div>
+
+            {/* تنبيه عدم الإرجاع */}
+            <div className="color-box px-4 py-2 flex items-center gap-2 mb-5 border-box">
+              <IoIosInformationCircleOutline
+                className="text-[#346596] flex-shrink-0"
+                size={24}
+              />
+              <span className="text-small">منتج غير قابل للاسترداد</span>
+            </div>
+
+            {/* قائمة الأمنيات */}
+            <div className="flex justify-end">
+              <button
+                onClick={handleAddToWishlist}
+                className="text-paragraph underline underline-offset-4 flex items-center gap-1"
+              >
+                أضف إلى قائمة الأمنيات
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

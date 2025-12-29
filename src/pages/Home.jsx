@@ -8,8 +8,6 @@ function Home() {
   
     return (
       <div className=''>
-       
-        {/* باقي محتوى الصفحة */}
        <BeautySection />
       <Select /> 
       <ProductCards />

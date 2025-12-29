@@ -1,24 +1,122 @@
+/* =========================
+   Tailwind Base
+========================= */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+
+/* =========================
+   Global Font – Almarai
+========================= */
 body {
   margin: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-family: "DIN Neuzeit Grotesk LT W01", sans-serif;
+  font-family: "Almarai", sans-serif;
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
   color: rgb(17, 17, 17);
   font-style: normal;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.max-w-95 {
+  max-width: 95%;
+  margin: 0 auto;
 }
 
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* =========================
+   Typography System – Almarai
+========================= */
+
+/* 🔹 Large Title – 24px */
+.text-title-lg {
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 30px;
+  color: rgb(17, 17, 17);
 }
+
+/* 🔹 Title – 16px */
+.text-title {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: rgb(17, 17, 17);
+}
+
+/* 🔹 Paragraph – 14px */
+.text-paragraph {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: #767676;
+   font-family: "Almarai", sans-serif;
+}
+
+/* 🔹 Small Text – 12px (Light) */
+.text-small {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: rgb(118, 118, 118);
+}
+
+/* 🔹 Small Text – 12px (Dark / SemiBold) */
+.text-small-dark {
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  color: rgb(17, 17, 17);
+}
+
+/* 🔹 Medium Text – 14px (Dark / SemiBold) */
+.text-medium-dark {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgb(17, 17, 17);
+}
+.text-small{
+  font-size: 16px;
+   line-height: 16px;
+ color: rgb(21, 60, 99);
+   font-weight:400
+}
+
+.header-style{
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: rgb(17, 17, 17);
+  /* padding: 10px 0; */
+  font-style: normal;
+}
+
+/* =========================
+   Layout
+========================= */
+.site-wrapper {
+  max-width: 95%;
+  margin: 0 auto;
+}
+
+.color-box{
+  background-color: #e9f3fc;
+
+}
+.bg-card{
+  background-color: #F8F8F8;
+}
+.border-box{
+  /* border: #346596 1px solid; */
+  box-shadow: inset 0 0 0 1px #346596;
+}
+/* =========================
+   Navbar (Mobile Fix)
+========================= */
 @media (max-width: 768px) {
   .navbar-collapse {
     display: none;
@@ -28,6 +126,16 @@ code {
     display: block;
   }
 }
+
+
+/* =========================
+   Code Font (Default)
+========================= */
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+
 /* القائمة الجانبية */
 .sidebar {
   position: fixed;
@@ -87,7 +195,7 @@ code {
   max-width: 900px; 
   margin: 40px auto;
   text-align: center;
-  font-family: 'Tajawal', sans-serif;
+  font-family: 'Almarai', sans-serif;
   font-weight: 300;
   color: #4c4c4c;
   background-color: #fff;
@@ -139,39 +247,115 @@ code {
 }
 /*card*/
 .cards-container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 🖥️ 5 في الديسكتوب */
   gap: 10px;
-  justify-content: center;
   margin-top: 50px;
-
 }
 
+/* 📱 موبايل */
+@media (max-width: 768px) {
+  .cards-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .card1 {
+    padding: 5px;
+  }
+  
+  .image-wrapper {
+    aspect-ratio: 3/4; /* نفس النسبة للموبايل */
+  }
+}
+
+.price-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.discount-label {
+  color: #B12009;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.price-main {
+  font-size: 16px;
+  color: #000;
+}
+
+.price-old-discount {
+  display: flex;
+  /* align-items: center; */
+  font-size: 14px;
+}
+
+
 .card1 {
-  width: 250px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+   overflow: hidden; /* ← مهم جدًا */
   padding: 10px;
   position: relative;
   transition: transform 0.2s;
-  font-family: 'Tajawal', sans-serif;
-
   
-
 }
-.linkCard{
+
+.linkCard {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  justify-content: space-between; /* المحتوى يتوزع بالتساوي */
+}
+.linkCard .aCard:nth-of-type(2) {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* أقصى سطرين للوصف */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 40px; /* ارتفاع ثابت للوصف */
+}
+.linkCard button {
+  margin-top: auto;
 }
 
 .image-wrapper {
- 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* ظل ناعم */
+  width: 100%;
+  aspect-ratio: 3/4; /* النسبة بين العرض والارتفاع (ديناميك) */
   position: relative;
-
   margin-bottom: 10px;
+  overflow: hidden;
+  background-color: #F8F8F8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* تظهر الصورة كاملة بدون قص */
+  display: block;
+}
+
+
+
+/* .image-wrapper img, */
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
 }
 
 .image-container {
   position: relative;
+   
 }
 
 .main-image {
@@ -207,11 +391,11 @@ code {
 }
 select.select{
   width: 300px;
-  font-family: 'Tajawal', sans-serif;
+  font-family: 'Almarai', sans-serif;
   font-weight: 300;
 }
 .downHeader{
-  font-family: 'Tajawal', sans-serif;
+  font-family: 'Almarai', sans-serif;
   font-weight: 300;
 }
 a.Sali{
@@ -223,16 +407,15 @@ a{
   text-decoration: none !important;
 
 }
-.cards-container a.aCard {
-  color: #000;
+.cards-container, a.aCard {
   font-weight: 400;
-  font-size: 16px;
+  font-size: 14px;
 }
-.cards-container  span.khsom{
-  color: #bc1907;
+.cards-container,  span.khsom{
+
   font-weight: 500;
   font-size: 13px;
-  
+
   
 }
 
@@ -333,7 +516,7 @@ a{
   justify-content:space-between;
   margin-top: 50px;
   flex-wrap: wrap;
-  font-family: 'Tajawal', sans-serif;
+ 
 }
 .product-detail .imgDiteal {
   display: flex;
@@ -343,7 +526,6 @@ a{
   width: 60%;
 }
 .product-detail .imgDiteal img{
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   width: 60%;
 }
 span.Sali{
@@ -446,7 +628,7 @@ button.ButtonDelav{
   margin-bottom: 20px;
 }
 .cart-container{
-  font-family: 'Tajawal', sans-serif;
+  font-family: 'Almarai', sans-serif;
 }
 .TopFooter{
   display: flex;
@@ -488,5 +670,5 @@ button.ButtonDelav{
   color: #000;
 }
 footer{
-   font-family: 'Tajawal', sans-serif;
+   font-family: 'Almarai', sans-serif;
 }

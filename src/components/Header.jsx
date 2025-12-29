@@ -51,7 +51,7 @@ const Header = () => {
   return (
     <>
       <header className="bg-white">
-        <Container fluid style={{ maxWidth: "95%" }} className="py-2">
+        <Container fluid className="py-2 max-w-95">
           <Row className="align-items-center">
             <Col
               md={3}
@@ -121,8 +121,7 @@ const Header = () => {
                 )}
               </Link>
 
-              <Link to="/cart" className="position-relative text-black">
-              </Link>
+              <Link to="/cart" className="position-relative text-black"></Link>
               <CartIcon cartCount={cartCount} />
             </Col>
 
@@ -134,12 +133,12 @@ const Header = () => {
           </Row>
         </Container>
 
-      {/* قائمة الفئات */}
-        <div className="bg-white text-black d-none d-md-block border-bottom downHeader">
+        {/* قائمة الفئات */}
+        <div className="bg-white text-black d-none d-md-block border-bottom downHeader ">
           <Container style={{ maxWidth: "95%" }} fluid>
             <Row>
               <Col>
-                <nav className="d-flex flex-wrap justify-content-between py-2">
+                <nav className="d-flex flex-wrap justify-content-between py-2 header-style">
                   {categories.map((cat, idx) => (
                     <a
                       key={idx}

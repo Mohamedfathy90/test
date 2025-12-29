@@ -1,24 +1,33 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { useUser } from "./context";
 import axios from "axios";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
-  const { user } = useUser();
+
+  // دالة لجلب Session ID
+  const getSessionId = () => {
+    let sessionId = localStorage.getItem("session_id");
+    if (!sessionId) {
+      sessionId =
+        "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem("session_id", sessionId);
+    }
+    return sessionId;
+  };
 
   const fetchCartCount = async () => {
-    if (!user?.id) {
-      setCartCount(0);
-      return;
-    }
+    const sessionId = getSessionId();
 
     try {
       const response = await axios.get(
-        `https://blomengdalis-tester.com/backend/get_cart.php?user_id=${user.id}`
+        `https://blomengdalis-tester.com/backend/get_cart.php?session_id=${sessionId}`
       );
-      const totalCount = response.data.reduce((total, item) => total + item.quantity, 0);
+      const totalCount = response.data.reduce(
+        (total, item) => total + item.quantity,
+        0
+      );
       setCartCount(totalCount);
     } catch (error) {
       console.error("Error fetching cart count:", error);
@@ -28,7 +37,7 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     fetchCartCount();
-  }, [user]);
+  }, []);
 
   const updateCartCount = () => {
     fetchCartCount();

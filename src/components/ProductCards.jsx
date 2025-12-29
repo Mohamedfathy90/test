@@ -1,80 +1,86 @@
-import React, { useEffect, useState } from 'react'; 
-import { Link } from 'react-router-dom';
-import { faHeart } from '@fortawesome/free-regular-svg-icons';
-import { faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useUser } from '../context/context';
-import { useFavorites } from '../context/FavoritesContext';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { faHeart } from "@fortawesome/free-regular-svg-icons";
+import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useFavorites } from "../context/FavoritesContext";
+import axios from "axios";
+
 const ProductCards = () => {
   const [products, setProducts] = useState([]);
-  const [favorites, setFavorites] = useState([]);
-  const { user } = useUser();
-  const { updateFavoritesCount } = useFavorites();
-  
+
+  const { favoritesIds, fetchFavoritesIds } = useFavorites();
+
+  const getSessionId = () => {
+    let sessionId = localStorage.getItem("session_id");
+    if (!sessionId) {
+      sessionId =
+        "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem("session_id", sessionId);
+    }
+    return sessionId;
+  };
 
   useEffect(() => {
-    fetch("https://blomengdalis-tester.com/backend/get-products.php")
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data);
-      })
-      .catch((error) => console.error("فشل في جلب البيانات:", error));
-    
-    if (user) {
-      fetchUserFavorites();
-    }
-  }, [user]);
+    fetchProducts();
+  }, []);
 
-  const fetchUserFavorites = async () => {
-    if (!user?.id) return;
-    
+  const fetchProducts = async () => {
     try {
-      const response = await axios.get(
-        `https://blomengdalis-tester.com/backend/get_favorites.php?user_id=${user.id}`
+      const res = await fetch(
+        "https://blomengdalis-tester.com/backend/get-products.php"
       );
-      const favoriteIds = response.data.map(item => item.id);
-      setFavorites(favoriteIds);
-    } catch (error) {
-      console.error('Error fetching favorites:', error);
+      const data = await res.json();
+      // console.log("Products data:", data);
+      setProducts(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching products:", err);
     }
   };
-  
+
   const handleFavoriteClick = async (e, productId) => {
     e.preventDefault();
-    
-    if (!user) {
-      alert('يجب تسجيل الدخول أولاً');
-      return;
-    }
+    e.stopPropagation();
+
+    const sessionId = getSessionId();
+    const numericId = parseInt(productId);
+    const isFav = favoritesIds.includes(numericId);
+    const action = isFav ? "remove" : "add";
+
+    // console.log(" Sending request:", {
+    //   sessionId,
+    //   productId: numericId,
+    //   action,
+    //   favoritesIds,
+    // });
 
     try {
-      const action = favorites.includes(productId) ? 'remove' : 'add';
-      
-      await axios.post(
-        'https://blomengdalis-tester.com/backend/toggle_favorite.php',
+      const response = await axios.post(
+        "https://blomengdalis-tester.com/backend/toggle_favorite.php",
         {
-          user_id: user.id,
-          product_id: productId,
-          action: action
+          session_id: sessionId,
+          product_id: numericId,
+          action,
         }
       );
-      
-      if (action === 'add') {
-        setFavorites([...favorites, productId]);
-      } else {
-        setFavorites(favorites.filter(id => id !== productId));
-      }
-      updateFavoritesCount();
-    } catch (error) {
-      console.error('Error toggling favorite:', error);
+
+      // console.log("Response:", response.data);
+
+      await fetchFavoritesIds();
+    } catch (err) {
+      // console.error(" Error toggling favorite:", err);
     }
   };
-  
-  const isFavorited = (productId) => favorites.includes(productId);
+
+  const isFavorited = (id) => {
+    const numericId = parseInt(id);
+    const result = favoritesIds.includes(numericId);
+    // console.log("Checking favorite:", { id, numericId, favoritesIds, result });
+    return result;
+  };
 
   return (
-    <div className="cards-container ">
+    <div className="cards-container max-w-95">
       {products.map((product) => (
         <Link to={`/product/${product.id}`} className="card1" key={product.id}>
           <div className="image-container image-wrapper">
@@ -83,52 +89,45 @@ const ProductCards = () => {
                 product.main_image
               )}`}
               alt={product.name}
-              style={{
-                height: "350px",
-                objectFit: "cover",
-                objectPosition: "center top",
-              }}
             />
 
-            <button 
-              className="favorite-btn" 
+            <button
+              className="favorite-btn"
               onClick={(e) => handleFavoriteClick(e, product.id)}
             >
-              <FontAwesomeIcon 
+              <FontAwesomeIcon
+                className="text-black"
                 icon={isFavorited(product.id) ? faHeartSolid : faHeart}
-                style={{color: isFavorited(product.id) ? '#000' : '#ccc'}}
+                style={{ fontSize: "18px" }}
               />
             </button>
-            <img
-              src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04LjA4MDA1IDEyLjI3MkM4LjA4MDA1IDEzLjQ1NiA3LjEyMDA1IDE0LjQxNiA1LjkyMDA1IDE0LjQxNkM0LjczNjA1IDE0LjQxNiAzLjc3NjA1IDEzLjQ1NiAzLjc3NjA1IDEyLjI3MkMzLjc3NjA1IDExLjc3NiAzLjkzNjA1IDExLjMyOCA0LjIwODA1IDEwLjk3NkgyLjgzMjAyQzIuNTkyMDIgMTAuOTc2IDIuNDAwMDIgMTAuNzg0IDIuNDAwMDIgMTAuNTQ0VjkuNkgzLjI2NDAyVjEwLjExMkgxMC4zMlYyLjQ0Nzk4TDMuMjY0MDIgMi40Nzk5OFYzLjJIMi40MDAwMlYyLjA0Nzk4QzIuNDAwMDIgMS44MDc5OCAyLjU5MjAyIDEuNjE1OTggMi44MzIwMiAxLjYxNTk4TDEwLjc1MiAxLjU4Mzk4QzEwLjk5MiAxLjU4Mzk4IDExLjE4NCAxLjc3NTk4IDExLjE4NCAyLjAxNTk4VjQuMjU1OThIMTMuNTA0QzEzLjYxNiA0LjI1NTk4IDEzLjcyOCA0LjMwMzk4IDEzLjgwOCA0LjM4Mzk4TDE1Ljg3MiA2LjQ0Nzk4QzE1Ljk1MiA2LjUyNzk4IDE2IDYuNjM5OTggMTYgNi43NTE5OFYxMC41NDRDMTYgMTAuNzg0IDE1LjgwOCAxMC45NzYgMTUuNTY4IDEwLjk3NkgxNC4xOTJDMTQuNDY0IDExLjMyOCAxNC42MjQgMTEuNzc2IDE0LjYyNCAxMi4yNzJDMTQuNjI0IDEzLjQ1NiAxMy42NjQgMTQuNDE2IDEyLjQ4IDE0LjQxNkMxMS4yOCAxNC40MTYgMTAuMzIgMTMuNDU2IDEwLjMyIDEyLjI3MkMxMC4zMiAxMS43NzYgMTAuNDggMTEuMzI4IDEwLjc1MiAxMC45NzZINy42NDgwNUM3LjkyMDA1IDExLjMyOCA4LjA4MDA1IDExLjc3NiA4LjA4MDA1IDEyLjI3MlpNNC42NDAwNSAxMi4yNzJDNC42NDAwNSAxMi45NzYgNS4yMTYwNSAxMy41NTIgNS45MjAwNSAxMy41NTJDNi42NDAwNSAxMy41NTIgNy4yMTYwNSAxMi45NzYgNy4yMTYwNSAxMi4yNzJDNy4yMTYwNSAxMS41NTIgNi42NDAwNSAxMC45NzYgNS45MjAwNSAxMC45NzZDNS4yMTYwNSAxMC45NzYgNC42NDAwNSAxMS41NTIgNC42NDAwNSAxMi4yNzJaTTExLjE4NCAxMi4yNzJDMTEuMTg0IDEyLjk3NiAxMS43NiAxMy41NTIgMTIuNDggMTMuNTUyQzEzLjE4NCAxMy41NTIgMTMuNzYgMTIuOTc2IDEzLjc2IDEyLjI3MkMxMy43NiAxMS41NTIgMTMuMTg0IDEwLjk3NiAxMi40OCAxMC45NzZDMTEuNzYgMTAuOTc2IDExLjE4NCAxMS41NTIgMTEuMTg0IDEyLjI3MlpNMTEuMTg0IDUuMTE5OThWMTAuMTEySDE1LjEzNlY2LjkyNzk4TDEzLjMyOCA1LjExOTk4SDExLjE4NFoiIGZpbGw9IiMxMTExMTEiLz4KPHBhdGggZD0iTTMuOTY1MzEgNi44MzcyN0gwVjYuMDAwMDZIMy45NjUzMVY2LjgzNzI3WiIgZmlsbD0iIzExMTExMSIvPgo8cGF0aCBkPSJNNS41OTk5OCA0LjgwMDA2SDAuODA0MzIxVjQuMDAwMDZINS41OTk5OFY0LjgwMDA2WiIgZmlsbD0iIzExMTExMSIvPgo8cGF0aCBkPSJNNS41OTk5OCA4LjgwMDA2SDAuODA0MzIxVjguMDAwMDZINS41OTk5OFY4LjgwMDA2WiIgZmlsbD0iIzExMTExMSIvPgo8L3N2Zz4K" // اختصرته هنا
-              alt="custom icon"
-              className="custom-icon"
-            />
           </div>
+
           <div className="linkCard">
-            <a className="aCard" style={{ paddingTop: "30px" }}>
-              {product.name}
-            </a>
-            <a className="aCard" style={{ paddingBottom: "30px" }}>
-              {product.description}
-            </a>
-            <span className="khsom">خصومات</span>
-            <span className="khsom">من {product.price_after} د.أ</span>
-            <a className="Sali">
-              <span
-                style={{
-                  textDecoration: "line-through",
-                  color: " #888",
-                  paddingLeft: "5px",
-                }}
-              >
-                {product.price_before} د.أ
-              </span>
-              <span style={{ color: " #000" }}>
-                {" "}
-                {product.discount_percent} %خصم
-              </span>
-            </a>
+            <span className="aCard text-black">{product.name}</span>
+            <span className="aCard text-black">{product.description}</span>
+
+            {product.discount_percent &&
+            parseFloat(product.discount_percent) > 0 ? (
+              <div className="">
+                <div className="discount-label">خصومات</div>
+                <div className="price-main">KWD {product.price_after}</div>
+                <div className="price-old-discount">
+                  <span
+                    style={{ textDecoration: "line-through", color: "#888" }}
+                  >
+                    KWD {product.price_before}
+                  </span>
+                  <span style={{ color: "#B12009", marginRight: "8px" }}>
+                    | {product.discount_percent}% خصم
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="">
+                <div className="price-main">KWD {product.original_price}</div>
+              </div>
+            )}
           </div>
         </Link>
       ))}

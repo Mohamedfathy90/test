@@ -1,28 +1,37 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { useUser } from "../context/context";
 import { useCart } from "../context/CartContext";
 import EmptyCart from "../components/EmptyCart";
 import CartItem from "../components/ItemsCart";
-
+import OrderSummary from "../components/OrderSummary";
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useUser();
   const { updateCartCount } = useCart();
   const navigate = useNavigate();
 
+  // دالة لإنشاء أو جلب Session ID
+  const getSessionId = () => {
+    let sessionId = localStorage.getItem("session_id");
+    if (!sessionId) {
+      sessionId =
+        "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem("session_id", sessionId);
+    }
+    return sessionId;
+  };
+
+  const sessionId = getSessionId();
+
   useEffect(() => {
     fetchCart();
-  }, [user, navigate]);
+  }, []);
 
   const fetchCart = async () => {
-    if (!user?.id) return;
-
     try {
       const response = await axios.get(
-        `https://blomengdalis-tester.com/backend/get_cart.php?user_id=${user.id}`
+        `https://blomengdalis-tester.com/backend/get_cart.php?session_id=${sessionId}`
       );
       setCartItems(response.data);
     } catch (error) {
@@ -33,12 +42,14 @@ const Cart = () => {
   };
 
   const updateQuantity = async (productId, action) => {
-    if (!user?.id) return;
-
     try {
       await axios.post(
         "https://blomengdalis-tester.com/backend/update-cart.php",
-        { user_id: user.id, product_id: productId, action }
+        {
+          session_id: sessionId,
+          product_id: productId,
+          action,
+        }
       );
       fetchCart();
       updateCartCount();
@@ -48,12 +59,14 @@ const Cart = () => {
   };
 
   const removeItem = async (productId) => {
-    if (!user?.id) return;
-
     try {
       await axios.post(
         "https://blomengdalis-tester.com/backend/update-cart.php",
-        { user_id: user.id, product_id: productId, action: "delete" }
+        {
+          session_id: sessionId,
+          product_id: productId,
+          action: "delete",
+        }
       );
       fetchCart();
       updateCartCount();
@@ -68,8 +81,6 @@ const Cart = () => {
   );
   const taxAmount = (totalAmount * 0.05).toFixed(3);
 
-  if (!user) return null;
-
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -81,13 +92,23 @@ const Cart = () => {
   if (cartItems.length === 0) return <EmptyCart />;
 
   return (
-    <div dir="rtl" className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-normal text-right mb-8 pb-4 border-b">
+    <div dir="rtl">
+      {/* Top Banner */}
+      <div className="w-full bg-black text-white text-center py-2.5 text-sm mb-4">
+        احصلوا على أحدث صيحات الموضة والجمال خلال ساعتين إلى باب منزلكم{" "}
+        <Link
+          to="/"
+          className="text-white border-bottom font-medium transition"
+        >
+          تسوقوا الآن
+        </Link>
+      </div>
+
+      <h1 className=" text-right mb-8 pb-4 border-b site-wrapper text-title-lg ">
         حقيبة التسوق
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Products */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 site-wrapper">
         <div className="lg:col-span-2">
           {cartItems.map((item) => (
             <CartItem
@@ -101,49 +122,14 @@ const Cart = () => {
 
         {/* Order Summary */}
         <div className="lg:col-span-1">
-          <div className="border-t-4 border-gray-200 sticky top-4">
-            <h2 className="text-xl font-medium text-center py-4 bg-gray-50">
-              ملخص الطلب
-            </h2>
-
-            <div className="p-6 space-y-4">
-              <div className="flex justify-between text-sm">
-                <span>المجموع الفرعي</span>
-                <span className="font-medium">
-                  KWD {totalAmount.toFixed(3)}
-                </span>
-              </div>
-
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>تقدير رسوم الشحن</span>
-                <span>التوصيل للكويت</span>
-              </div>
-
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>(يشمل الضرائب)</span>
-                <span>KWD {taxAmount}</span>
-              </div>
-
-              <div className="pt-4 border-t-2">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-base font-semibold">
-                    المبلغ الإجمالي
-                  </span>
-                  <span className="text-lg font-bold">
-                    KWD {totalAmount.toFixed(3)}
-                  </span>
-                </div>
-              </div>
-
-              <Link to="/checkout">
+          <OrderSummary totalAmount={totalAmount} taxAmount={taxAmount} />
+        </div>
+        {/* <Link to="/checkout">
                 <button className="w-full bg-black text-white py-3 text-sm font-medium hover:bg-gray-900 transition-colors">
                   إكمال عملية الشراء
                 </button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+              </Link> */}
+      </div>``
     </div>
   );
 };
