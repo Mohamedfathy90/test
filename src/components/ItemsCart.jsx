@@ -1,11 +1,18 @@
 import React from "react";
 import axios from "axios";
 import { useFavorites } from "../context/FavoritesContext";
+import { useNotification } from "../context/NotificationContext";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 
 const ItemCart = ({ item, removeItem, updateQuantity }) => {
-  const totalPrice = (item.price_after * item.quantity).toFixed(3);
-  const { fetchFavoritesCount } = useFavorites();
+  // console.log("Item data:", item);
+  // الحل: استخدم price_after أو original_price
+  const itemPrice =
+    item.price_after || item.original_price || item.price_before || 0;
+  const totalPrice = (itemPrice * item.quantity).toFixed(3);
+
+  const { favoritesIds, fetchFavoritesIds } = useFavorites();
+  const { showNotification } = useNotification();
 
   const getSessionId = () => {
     let sessionId = localStorage.getItem("session_id");
@@ -17,22 +24,35 @@ const ItemCart = ({ item, removeItem, updateQuantity }) => {
     return sessionId;
   };
 
-  const handleAddToWishlist = async () => {
+  const isFavorited = favoritesIds.includes(parseInt(item.product_id));
+
+  const handleToggleFavorite = async () => {
     const sessionId = getSessionId();
+    const numericId = parseInt(item.product_id);
+    const currentlyFavorited = favoritesIds.includes(numericId);
+    const action = currentlyFavorited ? "remove" : "add";
+
     try {
       await axios.post(
         "https://blomengdalis-tester.com/backend/toggle_favorite.php",
         {
           session_id: sessionId,
-          product_id: item.product_id,
-          action: "add",
+          product_id: numericId,
+          action: action,
         }
       );
-      alert("تم إضافة المنتج إلى قائمة الأمنيات");
-      fetchFavoritesCount();
+
+      showNotification(
+        currentlyFavorited
+          ? "تم حذف المنتج من قائمة الأمنيات"
+          : "تم إضافة المنتج إلى قائمة الأمنيات",
+        "success"
+      );
+
+      await fetchFavoritesIds();
     } catch (error) {
-      console.error("Error adding to wishlist:", error);
-      alert("❌ فشل في إضافة المنتج إلى قائمة الأمنيات");
+      console.error("Error toggling favorite:", error);
+      showNotification("فشل في تحديث قائمة الأمنيات", "error");
     }
   };
 
@@ -41,9 +61,9 @@ const ItemCart = ({ item, removeItem, updateQuantity }) => {
       <div className="grid grid-cols-12 gap-x-6 gap-y-4">
         {/* ================= MOBILE LAYOUT ================= */}
         <div className="col-span-12 md:hidden">
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-4 ">
             {/* Image Column */}
-            <div className="w-24 h-32 flex-shrink-0">
+            <div className=" w-24 h-32 flex-shrink-0 ">
               <img
                 src={`https://blomengdalis-tester.com/backend/uploads/${item.main_image}`}
                 alt={item.name}
@@ -86,7 +106,7 @@ const ItemCart = ({ item, removeItem, updateQuantity }) => {
               <div className="flex items-center justify-between mb-3">
                 {/* Size */}
                 <div className="text-small-dark underline underline-offset-2">
-                  {item.size || "لا حجم"}
+                  {item.sizes || "لا حجم"}
                 </div>
 
                 {/* Quantity Controls */}
@@ -141,21 +161,23 @@ const ItemCart = ({ item, removeItem, updateQuantity }) => {
               {/* Add to wishlist */}
               <div className="text-end">
                 <button
-                  onClick={handleAddToWishlist}
+                  onClick={handleToggleFavorite}
                   className="text-paragraph underline underline-offset-4"
                 >
-                  أضف إلى قائمة الأمنيات
+                  {isFavorited
+                    ? "حذف من قائمة الأمنيات"
+                    : "أضف إلى قائمة الأمنيات"}
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ================= DESKTOP LAYOUT (UNCHANGED) ================= */}
+        {/* ================= DESKTOP LAYOUT ================= */}
         <div className="hidden md:contents">
           {/* صورة المنتج */}
           <div className="col-span-4 md:col-span-3 flex items-start justify-center sm:justify-start">
-            <div className="w-40 h-40">
+            <div className="w-40 h-40 bg-card ">
               <img
                 src={`https://blomengdalis-tester.com/backend/uploads/${item.main_image}`}
                 alt={item.name}
@@ -181,7 +203,7 @@ const ItemCart = ({ item, removeItem, updateQuantity }) => {
             <div className="flex items-center justify-between mb-4 gap-2">
               {/* الحجم */}
               <div className="text-small-dark underline underline-offset-2 flex-shrink-0">
-                {item.size || "لا حجم"}
+                {item.sizes || "لا حجم"}
               </div>
 
               {/* أزرار الكمية */}
@@ -255,10 +277,12 @@ const ItemCart = ({ item, removeItem, updateQuantity }) => {
             {/* قائمة الأمنيات */}
             <div className="flex justify-end">
               <button
-                onClick={handleAddToWishlist}
+                onClick={handleToggleFavorite}
                 className="text-paragraph underline underline-offset-4 flex items-center gap-1"
               >
-                أضف إلى قائمة الأمنيات
+                {isFavorited
+                  ? "حذف من قائمة الأمنيات"
+                  : "أضف إلى قائمة الأمنيات"}
               </button>
             </div>
           </div>

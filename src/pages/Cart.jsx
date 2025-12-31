@@ -5,6 +5,7 @@ import { useCart } from "../context/CartContext";
 import EmptyCart from "../components/EmptyCart";
 import CartItem from "../components/ItemsCart";
 import OrderSummary from "../components/OrderSummary";
+
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,10 +76,16 @@ const Cart = () => {
     }
   };
 
-  const totalAmount = cartItems.reduce(
-    (total, item) => total + item.price_after * item.quantity,
-    0
-  );
+  // ✅ الحل: استخدم price_after أو original_price أو price_before
+  const totalAmount = cartItems.reduce((total, item) => {
+    const itemPrice =
+      parseFloat(item.price_after) ||
+      parseFloat(item.original_price) ||
+      parseFloat(item.price_before) ||
+      0;
+    return total + itemPrice * item.quantity;
+  }, 0);
+
   const taxAmount = (totalAmount * 0.05).toFixed(3);
 
   if (loading) {
@@ -104,7 +111,7 @@ const Cart = () => {
         </Link>
       </div>
 
-      <h1 className=" text-right mb-8 pb-4 border-b site-wrapper text-title-lg ">
+      <h1 className="text-right mb-8 pb-4 border-b site-wrapper text-title-lg">
         حقيبة التسوق
       </h1>
 
@@ -124,12 +131,7 @@ const Cart = () => {
         <div className="lg:col-span-1">
           <OrderSummary totalAmount={totalAmount} taxAmount={taxAmount} />
         </div>
-        {/* <Link to="/checkout">
-                <button className="w-full bg-black text-white py-3 text-sm font-medium hover:bg-gray-900 transition-colors">
-                  إكمال عملية الشراء
-                </button>
-              </Link> */}
-      </div>``
+      </div>
     </div>
   );
 };

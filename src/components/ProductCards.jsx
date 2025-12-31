@@ -4,12 +4,14 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useFavorites } from "../context/FavoritesContext";
+import { useNotification } from "../context/NotificationContext";
 import axios from "axios";
 
 const ProductCards = () => {
   const [products, setProducts] = useState([]);
 
   const { favoritesIds, fetchFavoritesIds } = useFavorites();
+  const { showNotification } = useNotification();
 
   const getSessionId = () => {
     let sessionId = localStorage.getItem("session_id");
@@ -31,7 +33,6 @@ const ProductCards = () => {
         "https://blomengdalis-tester.com/backend/get-products.php"
       );
       const data = await res.json();
-      // console.log("Products data:", data);
       setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Error fetching products:", err);
@@ -47,13 +48,6 @@ const ProductCards = () => {
     const isFav = favoritesIds.includes(numericId);
     const action = isFav ? "remove" : "add";
 
-    // console.log(" Sending request:", {
-    //   sessionId,
-    //   productId: numericId,
-    //   action,
-    //   favoritesIds,
-    // });
-
     try {
       const response = await axios.post(
         "https://blomengdalis-tester.com/backend/toggle_favorite.php",
@@ -64,18 +58,23 @@ const ProductCards = () => {
         }
       );
 
-      // console.log("Response:", response.data);
+      showNotification(
+        isFav
+          ? "تم حذف المنتج من قائمة الأمنيات"
+          : "تم إضافة المنتج إلى قائمة الأمنيات",
+        "success"
+      );
 
       await fetchFavoritesIds();
     } catch (err) {
-      // console.error(" Error toggling favorite:", err);
+      console.error("Error toggling favorite:", err);
+      showNotification("فشل في تحديث قائمة الأمنيات", "error");
     }
   };
 
   const isFavorited = (id) => {
     const numericId = parseInt(id);
     const result = favoritesIds.includes(numericId);
-    // console.log("Checking favorite:", { id, numericId, favoritesIds, result });
     return result;
   };
 

@@ -5,10 +5,11 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useFavorites } from "../context/FavoritesContext";
+import { useNotification } from "../context/NotificationContext";
 
 function ProductButtons({ onAddToCart, productId }) {
-  // ✅ استخدم fetchFavoritesIds بدل fetchFavoritesCount
   const { favoritesIds, fetchFavoritesIds } = useFavorites();
+  const { showNotification } = useNotification();
 
   const getSessionId = () => {
     let sessionId = localStorage.getItem("session_id");
@@ -38,50 +39,82 @@ function ProductButtons({ onAddToCart, productId }) {
         }
       );
 
-      const message = currentlyFavorited
-        ? "تم حذف المنتج من قائمة الأمنيات"
-        : "تم إضافة المنتج إلى قائمة الأمنيات";
+      showNotification(
+        currentlyFavorited
+          ? "تم حذف المنتج من قائمة الأمنيات"
+          : "تم إضافة المنتج إلى قائمة الأمنيات",
+        "success"
+      );
 
-      alert(message);
-
-      // ✅ نحدث الـ IDs عشان الأيقونة تتغير فوراً
       await fetchFavoritesIds();
     } catch (error) {
       console.error("Error toggling favorite:", error);
-      alert("❌ فشل في تحديث قائمة الأمنيات");
+      showNotification("فشل في تحديث قائمة الأمنيات", "error");
     }
   };
 
   return (
-    <div>
+    <div style={{ width: "100%" }}>
+      {/* زر الإضافة للسلة */}
       <button
-        className="btn btn-dark"
         onClick={onAddToCart}
         style={{
           width: "100%",
           marginBottom: "10px",
+          backgroundColor: "#000",
+          border: "none",
+          borderRadius: "0",
+          padding: "12px 20px",
+          fontSize: "16px",
+          fontWeight: "500",
+          color: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
         }}
       >
-        <FontAwesomeIcon icon={faBagShopping} />
-        <span> أضف للحقيبة</span>
+        <FontAwesomeIcon
+          icon={faBagShopping}
+          style={{
+            fontSize: "18px",
+            position: "absolute",
+            right: "20px",
+          }}
+        />
+        <span>اضف للحقيبة</span>
       </button>
 
+      {/* زر المفضلة */}
       <button
-        className={`btn ${isFavorited ? "btn-dark" : "btn-outline-dark"}`}
         onClick={handleToggleFavorite}
         style={{
           width: "100%",
+          backgroundColor: "#fff",
+          color: "#000",
+          border: "1px solid #000",
+          borderRadius: "0",
+          padding: "12px 20px",
+          fontSize: "16px",
+          fontWeight: "500",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
         }}
       >
         <FontAwesomeIcon
           icon={isFavorited ? faHeartSolid : faHeart}
-          // style={{
-          //   color: isFavorited ? "#E11D48" : "#6B7280",
-          //   marginRight: "5px",
-          // }}
+          style={{
+            fontSize: "18px",
+            position: "absolute",
+            right: "20px",
+            color: isFavorited ? "#000" : "#000",
+          }}
         />
-
-        {isFavorited ? " موجود في المفضلة" : " أضف إلى قائمة الأمنيات"}
+        <span>
+          {isFavorited ? "موجود في المفضلة" : "أضف إلى قائمة الامنيات"}
+        </span>
       </button>
     </div>
   );

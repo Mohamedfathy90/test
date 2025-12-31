@@ -4,13 +4,16 @@ import axios from "axios";
 import { IoHeartDislikeOutline, IoShareOutline } from "react-icons/io5";
 import { useFavorites } from "../context/FavoritesContext";
 import { IoTrashOutline } from "react-icons/io5";
+import { useCart } from "../context/CartContext";
+import { useNotification } from "../context/NotificationContext";
 
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ استخدم fetchFavoritesIds عشان نحدث الـ Context بعد الحذف
   const { fetchFavoritesIds } = useFavorites();
+  const { updateCartCount } = useCart();
+  const { showNotification } = useNotification();
 
   const getSessionId = () => {
     let sessionId = localStorage.getItem("session_id");
@@ -54,13 +57,39 @@ function Favorites() {
         }
       );
 
-      // ✅ نحدث الصفحة المحلية
+      showNotification("تم حذف المنتج من المفضلة", "success");
       fetchFavorites();
-
-      // ✅ نحدث الـ Context عشان باقي الصفحات تشوف التغيير
       fetchFavoritesIds();
     } catch (err) {
       console.error(err);
+      showNotification("حدث خطأ أثناء الحذف", "error");
+    }
+  };
+
+  const addToCart = async (product) => {
+    const sessionId = getSessionId();
+
+    try {
+      const response = await axios.post(
+        "https://blomengdalis-tester.com/backend/add_to_cart.php",
+        {
+          session_id: sessionId,
+          product_id: product.id,
+          quantity: 1,
+          size: product.sizes || "",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      showNotification("تم إضافة المنتج للسلة", "success");
+      updateCartCount();
+    } catch (error) {
+      console.error(error);
+      showNotification("فشل في إضافة المنتج إلى السلة", "error");
     }
   };
 
@@ -72,7 +101,7 @@ function Favorites() {
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert("تم نسخ الرابط");
+      showNotification("تم نسخ الرابط", "success");
     }
   };
 
@@ -109,21 +138,17 @@ function Favorites() {
       {/* Empty State */}
       {favorites.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          {/* Icon */}
           <div className="mb-6">
             <IoHeartDislikeOutline size={70} className="text-gray-300" />
           </div>
 
-          {/* Title */}
           <h3 className="text-xl font-medium mb-3">هذه القائمة فارغة.</h3>
 
-          {/* Description */}
           <p className="text-gray-500 max-w-md leading-relaxed mb-8">
             ما عليك سوى الضغط على الرمز ♡ الموجود بجانب منتجاتنا لحفظ المنتجات
             التي تحبينها لوقت لاحق.
           </p>
 
-          {/* Button */}
           <Link
             to="/"
             className=" border border-black px-10 py-3 text-black text-bold
@@ -135,75 +160,97 @@ function Favorites() {
       ) : (
         /* Products */
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
-          {favorites.map((product) => (
-            <div
-              key={product.id}
-              className="
+          {favorites.map((product) => {
+            // تحديد إذا كان فيه خصم
+            const hasDiscount =
+              product.discount_percent &&
+              parseFloat(product.discount_percent) > 0;
+
+            // السعر المعروض (بعد الخصم أو السعر الأساسي)
+            const displayPrice = hasDiscount
+              ? product.price_after
+              : product.original_price;
+
+            return (
+              <div
+                key={product.id}
+                className="
   pb-6
      md:pb-0
     relative
   "
-            >
-              {/* CARD */}
-              <div className="flex gap-4 md:flex-col ">
-                {/* IMAGE */}
-                <Link
-                  to={`/product/${product.id}`}
-                  className="
+              >
+                {/* CARD */}
+                <div className="flex gap-4 md:flex-col ">
+                  {/* IMAGE */}
+                  <Link
+                    to={`/product/${product.id}`}
+                    className="
                     w-[110px] h-[160px]
                     md:w-full md:h-[400px]
                     flex-shrink-0
                   "
-                >
-                  <img
-                    src={`https://blomengdalis-tester.com/backend/uploads/${product.main_image}`}
-                    alt={product.name}
-                    className="w-full h-full object-cover bg-card"
-                  />
-                </Link>
-
-                {/* CONTENT */}
-                <div className="flex-1 md:p-4">
-                  <Link
-                    to={`/product/${product.id}`}
-                    className="block text-black text-sm md:text-base font-medium mb-1"
                   >
-                    {product.name}
+                    <img
+                      src={`https://blomengdalis-tester.com/backend/uploads/${product.main_image}`}
+                      alt={product.name}
+                      className="w-full h-full object-cover bg-card"
+                    />
                   </Link>
 
-                  <p className="text-xs md:text-sm text-gray-500 mb-1">
-                    {product.description}
-                  </p>
+                  {/* CONTENT */}
+                  <div className="flex-1 md:p-4">
+                    <Link
+                      to={`/product/${product.id}`}
+                      className="block text-black text-sm md:text-base font-medium mb-1"
+                    >
+                      {product.name}
+                    </Link>
+                    <p className="text-xs md:text-sm text-gray-500 mb-1">
+                      {product.description}
+                    </p>
+                    {/* عرض الأسعار */}
+                    {hasDiscount ? (
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-sm font-semibold">
+                          KWD {product.price_after}
+                        </span>
+                        <span className="text-xs text-gray-400 line-through">
+                          KWD {product.price_before}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="mb-3">
+                        <span className="text-sm font-semibold">
+                          KWD {product.original_price}
+                        </span>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => addToCart(product)}
+                      className="w-full bg-black text-white py-2 text-sm hover:bg-gray-800 transition-colors"
+                    >
 
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm font-semibold">
-                      KWD {product.price_after}
-                    </span>
-                    <span className="text-xs text-gray-400 line-through">
-                      KWD {product.price_before}
-                    </span>
+                      اضف للحقيبة
+                    </button>
+                  
+                    <button
+                      onClick={() => removeFavorite(product.id)}
+                      className="block mt-2"
+                    >
+                      {/* Mobile icon */}
+                      <IoTrashOutline className="  absolute top-2 left-2 text-lg md:hidden" />
+
+                      {/* Desktop text */}
+                      <span className="hidden md:block text-xs underline">
+                        حذف
+                      </span>
+                    </button>
                   </div>
-
-                  <button className="w-full bg-black text-white py-2 text-sm">
-                    اضف للحقيبة
-                  </button>
-
-                  <button
-                    onClick={() => removeFavorite(product.id)}
-                    className="block mt-2"
-                  >
-                    {/* Mobile icon */}
-                    <IoTrashOutline className="  absolute top-2 left-2 text-lg md:hidden" />
-
-                    {/* Desktop text */}
-                    <span className="hidden md:block text-xs underline">
-                      حذف
-                    </span>
-                  </button>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
