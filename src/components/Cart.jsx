@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 
-// نموذج بيانات المنتجات في السلة
 const sampleCartData = [
   { id: 1, name: 'منتج 1', price: 100, quantity: 2, image: 'product1.jpg' },
   { id: 2, name: 'منتج 2', price: 200, quantity: 1, image: 'product2.jpg' },

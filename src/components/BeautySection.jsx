@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-
-
+import { Link } from "react-router-dom";
 const BeautySection = () => {
   const [expanded, setExpanded] = useState(false);
 
@@ -13,7 +12,7 @@ const BeautySection = () => {
 
   return (
     <section className="beauty-section">
-      <a href="#" className="beauty-link">الجمال</a>
+      <Link to="#" className="beauty-link">الجمال</Link>
       <h2 className="beauty-sect">العطور</h2>
       <p className={`beauty-text ${expanded ? "expanded" : ""}`}>
         {fullText}

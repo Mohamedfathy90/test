@@ -3,26 +3,15 @@ import axios from "axios";
 import { useFavorites } from "../context/FavoritesContext";
 import { useNotification } from "../context/NotificationContext";
 import { IoIosInformationCircleOutline } from "react-icons/io";
+import { getSessionId } from "../utils/SessionId"; 
 
 const ItemCart = ({ item, removeItem, updateQuantity }) => {
-  // console.log("Item data:", item);
-  // الحل: استخدم price_after أو original_price
   const itemPrice =
     item.price_after || item.original_price || item.price_before || 0;
   const totalPrice = (itemPrice * item.quantity).toFixed(3);
 
   const { favoritesIds, fetchFavoritesIds } = useFavorites();
   const { showNotification } = useNotification();
-
-  const getSessionId = () => {
-    let sessionId = localStorage.getItem("session_id");
-    if (!sessionId) {
-      sessionId =
-        "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem("session_id", sessionId);
-    }
-    return sessionId;
-  };
 
   const isFavorited = favoritesIds.includes(parseInt(item.product_id));
 

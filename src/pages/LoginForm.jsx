@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../context/context"; // ✅ استيراد useUser
-
+import { useUser } from "../context/context"; 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useUser(); // ✅ استخدام login من Context
-
+  const { login } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -44,6 +42,7 @@ function Login() {
 
     try {
       const response = await fetch(
+        // amazonq-ignore-next-line
         "https://blomengdalis-tester.com/backend/login.php",
         {
           method: "POST",

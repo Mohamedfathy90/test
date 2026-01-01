@@ -6,25 +6,16 @@ import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useFavorites } from "../context/FavoritesContext";
 import { useNotification } from "../context/NotificationContext";
+import { getSessionId } from "../utils/SessionId";
 
 function ProductButtons({ onAddToCart, productId }) {
   const { favoritesIds, fetchFavoritesIds } = useFavorites();
   const { showNotification } = useNotification();
 
-  const getSessionId = () => {
-    let sessionId = localStorage.getItem("session_id");
-    if (!sessionId) {
-      sessionId =
-        "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem("session_id", sessionId);
-    }
-    return sessionId;
-  };
-
   const isFavorited = favoritesIds.includes(parseInt(productId));
 
   const handleToggleFavorite = async () => {
-    const sessionId = getSessionId();
+    const sessionId = getSessionId(); 
     const numericId = parseInt(productId);
     const currentlyFavorited = favoritesIds.includes(numericId);
     const action = currentlyFavorited ? "remove" : "add";
@@ -55,7 +46,6 @@ function ProductButtons({ onAddToCart, productId }) {
 
   return (
     <div style={{ width: "100%" }}>
-      {/* زر الإضافة للسلة */}
       <button
         onClick={onAddToCart}
         style={{
@@ -85,7 +75,6 @@ function ProductButtons({ onAddToCart, productId }) {
         <span>اضف للحقيبة</span>
       </button>
 
-      {/* زر المفضلة */}
       <button
         onClick={handleToggleFavorite}
         style={{

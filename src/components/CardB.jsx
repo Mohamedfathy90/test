@@ -13,7 +13,6 @@ const brands = [
     slug: "dior",
     image: "brand-54a040e3-ef49-46a0-8ac1-f5ffba29c157-1743310290105.jpeg"
   },
-  // ... أضف باقي البراندات هنا
 ];
 
 const CardB = () => {

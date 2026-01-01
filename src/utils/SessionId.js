@@ -9,13 +9,9 @@ export const getSessionId = () => {
 
   return sessionId;
 };
-
-
 export const clearSessionId = () => {
   localStorage.removeItem("session_id");
 };
-
-
 export const hasSessionId = () => {
   return !!localStorage.getItem("session_id");
 };

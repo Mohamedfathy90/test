@@ -18,28 +18,23 @@ function Register() {
   const validateForm = () => {
     const newErrors = {};
 
-    // التحقق من الاسم
     if (!name) {
       newErrors.name = "الاسم مطلوب";
     } else if (name.length < 2) {
       newErrors.name = "الاسم يجب أن يكون حرفين على الأقل";
     }
 
-    // التحقق من البريد الإلكتروني
     if (!email) {
       newErrors.email = "البريد الإلكتروني مطلوب";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "البريد الإلكتروني غير صحيح";
     }
 
-    // التحقق من كلمة المرور
     if (!password) {
       newErrors.password = "كلمة المرور مطلوبة";
     } else if (password.length < 6) {
       newErrors.password = "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
     }
-
-    // التحقق من البلد
     if (!country) {
       newErrors.country = "البلد مطلوب";
     } else if (country.length < 2) {
@@ -55,7 +50,6 @@ function Register() {
     setMessage("");
     setErrors({});
 
-    // التحقق من الحقول قبل الإرسال
     if (!validateForm()) {
       return;
     }

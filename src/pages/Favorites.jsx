@@ -6,6 +6,7 @@ import { useFavorites } from "../context/FavoritesContext";
 import { IoTrashOutline } from "react-icons/io5";
 import { useCart } from "../context/CartContext";
 import { useNotification } from "../context/NotificationContext";
+import { getSessionId } from "../utils/SessionId"; 
 
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
@@ -14,19 +15,6 @@ function Favorites() {
   const { fetchFavoritesIds } = useFavorites();
   const { updateCartCount } = useCart();
   const { showNotification } = useNotification();
-
-  const getSessionId = () => {
-    let sessionId = localStorage.getItem("session_id");
-    if (!sessionId) {
-      sessionId =
-        "guest_" +
-        Date.now() +
-        "_" +
-        Math.random().toString(36).substring(2, 9);
-      localStorage.setItem("session_id", sessionId);
-    }
-    return sessionId;
-  };
 
   useEffect(() => {
     fetchFavorites();
@@ -51,7 +39,7 @@ function Favorites() {
       await axios.post(
         "https://blomengdalis-tester.com/backend/toggle_favorite.php",
         {
-          session_id: getSessionId(),
+          session_id: getSessionId(), 
           product_id: id,
           action: "remove",
         }
@@ -67,7 +55,7 @@ function Favorites() {
   };
 
   const addToCart = async (product) => {
-    const sessionId = getSessionId();
+    const sessionId = getSessionId(); 
 
     try {
       const response = await axios.post(
@@ -109,7 +97,6 @@ function Favorites() {
 
   return (
     <div className="max-w-[95%] mx-auto">
-      {/* Breadcrumb */}
       <div className="flex gap-2 text-sm text-gray-500 mt-5">
         <Link to="/" className="text-black">
           الصفحة الرئيسية
@@ -122,7 +109,6 @@ function Favorites() {
         قائمة الأمنيات ({favorites.length})
       </h2>
 
-      {/* Actions */}
       {favorites.length > 0 && (
         <div className="flex justify-end gap-3 my-6">
           <button
@@ -135,7 +121,6 @@ function Favorites() {
         </div>
       )}
 
-      {/* Empty State */}
       {favorites.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="mb-6">
@@ -158,38 +143,22 @@ function Favorites() {
           </Link>
         </div>
       ) : (
-        /* Products */
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
           {favorites.map((product) => {
-            // تحديد إذا كان فيه خصم
             const hasDiscount =
               product.discount_percent &&
               parseFloat(product.discount_percent) > 0;
 
-            // السعر المعروض (بعد الخصم أو السعر الأساسي)
             const displayPrice = hasDiscount
               ? product.price_after
               : product.original_price;
 
             return (
-              <div
-                key={product.id}
-                className="
-  pb-6
-     md:pb-0
-    relative
-  "
-              >
-                {/* CARD */}
+              <div key={product.id} className="pb-6 md:pb-0 relative">
                 <div className="flex gap-4 md:flex-col ">
-                  {/* IMAGE */}
                   <Link
                     to={`/product/${product.id}`}
-                    className="
-                    w-[110px] h-[160px]
-                    md:w-full md:h-[400px]
-                    flex-shrink-0
-                  "
+                    className="w-[110px] h-[160px] md:w-full md:h-[400px] flex-shrink-0"
                   >
                     <img
                       src={`https://blomengdalis-tester.com/backend/uploads/${product.main_image}`}
@@ -198,7 +167,6 @@ function Favorites() {
                     />
                   </Link>
 
-                  {/* CONTENT */}
                   <div className="flex-1 md:p-4">
                     <Link
                       to={`/product/${product.id}`}
@@ -209,7 +177,6 @@ function Favorites() {
                     <p className="text-xs md:text-sm text-gray-500 mb-1">
                       {product.description}
                     </p>
-                    {/* عرض الأسعار */}
                     {hasDiscount ? (
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-sm font-semibold">
@@ -230,18 +197,14 @@ function Favorites() {
                       onClick={() => addToCart(product)}
                       className="w-full bg-black text-white py-2 text-sm hover:bg-gray-800 transition-colors"
                     >
-
                       اضف للحقيبة
                     </button>
-                  
+
                     <button
                       onClick={() => removeFavorite(product.id)}
                       className="block mt-2"
                     >
-                      {/* Mobile icon */}
-                      <IoTrashOutline className="  absolute top-2 left-2 text-lg md:hidden" />
-
-                      {/* Desktop text */}
+                      <IoTrashOutline className="absolute top-2 left-2 text-lg md:hidden" />
                       <span className="hidden md:block text-xs underline">
                         حذف
                       </span>

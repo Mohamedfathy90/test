@@ -6,22 +6,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useFavorites } from "../context/FavoritesContext";
 import { useNotification } from "../context/NotificationContext";
 import axios from "axios";
+import { getSessionId } from "../utils/SessionId"; 
 
 const ProductCards = () => {
   const [products, setProducts] = useState([]);
 
   const { favoritesIds, fetchFavoritesIds } = useFavorites();
   const { showNotification } = useNotification();
-
-  const getSessionId = () => {
-    let sessionId = localStorage.getItem("session_id");
-    if (!sessionId) {
-      sessionId =
-        "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem("session_id", sessionId);
-    }
-    return sessionId;
-  };
 
   useEffect(() => {
     fetchProducts();
@@ -43,7 +34,7 @@ const ProductCards = () => {
     e.preventDefault();
     e.stopPropagation();
 
-    const sessionId = getSessionId();
+    const sessionId = getSessionId(); 
     const numericId = parseInt(productId);
     const isFav = favoritesIds.includes(numericId);
     const action = isFav ? "remove" : "add";

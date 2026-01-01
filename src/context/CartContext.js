@@ -1,24 +1,14 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
+import { getSessionId } from "../utils/SessionId"; 
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
 
-  // دالة لجلب Session ID
-  const getSessionId = () => {
-    let sessionId = localStorage.getItem("session_id");
-    if (!sessionId) {
-      sessionId =
-        "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem("session_id", sessionId);
-    }
-    return sessionId;
-  };
-
   const fetchCartCount = async () => {
-    const sessionId = getSessionId();
+  const sessionId = getSessionId(); 
 
     try {
       const response = await axios.get(

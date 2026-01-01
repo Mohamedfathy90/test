@@ -72,7 +72,7 @@ const Header = () => {
               className="d-flex d-md-none justify-content-start align-items-center"
             >
               <Button
-                className="d-md-none ms-2 border-0 menu-btn bg-transparent text-black"
+                className="d-md-none border-0 menu-btn bg-transparent text-black"
                 onClick={() => setSidebarOpen(true)}
               >
                 <RiMenu3Line size={25} />

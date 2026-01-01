@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { getSessionId } from "../utils/SessionId"; 
 
 const FavoritesContext = createContext();
 
@@ -8,21 +9,10 @@ export const useFavorites = () => useContext(FavoritesContext);
 export const FavoritesProvider = ({ children }) => {
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [favoritesIds, setFavoritesIds] = useState([]);
-
-  const getSessionId = () => {
-    let sessionId = localStorage.getItem("session_id");
-    if (!sessionId) {
-      sessionId =
-        "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem("session_id", sessionId);
-    }
-    return sessionId;
-  };
-
   // ✅ دالة لجلب العدد فقط
   const fetchFavoritesCount = async () => {
     try {
-      const sessionId = getSessionId();
+      const sessionId = getSessionId(); 
       const res = await axios.get(
         `https://blomengdalis-tester.com/backend/get_favorites.php?session_id=${sessionId}`
       );
@@ -35,7 +25,7 @@ export const FavoritesProvider = ({ children }) => {
   // ✅ دالة لجلب الـ IDs كاملة
   const fetchFavoritesIds = async () => {
     try {
-      const sessionId = getSessionId();
+      const sessionId = getSessionId(); // 👈 استخدام الدالة المستوردة
       const res = await axios.get(
         `https://blomengdalis-tester.com/backend/get_favorites.php?session_id=${sessionId}`
       );

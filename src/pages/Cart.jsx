@@ -5,25 +5,15 @@ import { useCart } from "../context/CartContext";
 import EmptyCart from "../components/EmptyCart";
 import CartItem from "../components/ItemsCart";
 import OrderSummary from "../components/OrderSummary";
+import { getSessionId } from "../utils/SessionId";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const { updateCartCount } = useCart();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  // دالة لإنشاء أو جلب Session ID
-  const getSessionId = () => {
-    let sessionId = localStorage.getItem("session_id");
-    if (!sessionId) {
-      sessionId =
-        "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem("session_id", sessionId);
-    }
-    return sessionId;
-  };
-
-  const sessionId = getSessionId();
+  const sessionId = getSessionId(); 
 
   useEffect(() => {
     fetchCart();
@@ -44,6 +34,7 @@ const Cart = () => {
 
   const updateQuantity = async (productId, action) => {
     try {
+      // amazonq-ignore-next-line
       await axios.post(
         "https://blomengdalis-tester.com/backend/update-cart.php",
         {
@@ -76,7 +67,6 @@ const Cart = () => {
     }
   };
 
-  // ✅ الحل: استخدم price_after أو original_price أو price_before
   const totalAmount = cartItems.reduce((total, item) => {
     const itemPrice =
       parseFloat(item.price_after) ||
@@ -100,7 +90,6 @@ const Cart = () => {
 
   return (
     <div dir="rtl">
-      {/* Top Banner */}
       <div className="w-full bg-black text-white text-center py-2.5 text-sm mb-4">
         احصلوا على أحدث صيحات الموضة والجمال خلال ساعتين إلى باب منزلكم{" "}
         <Link
@@ -127,7 +116,6 @@ const Cart = () => {
           ))}
         </div>
 
-        {/* Order Summary */}
         <div className="lg:col-span-1">
           <OrderSummary totalAmount={totalAmount} taxAmount={taxAmount} />
         </div>

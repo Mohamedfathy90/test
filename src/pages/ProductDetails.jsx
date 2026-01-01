@@ -6,6 +6,7 @@ import ProductButtons from "../components/ProductButtons";
 import { useCart } from "../context/CartContext";
 import { useNotification } from "../context/NotificationContext";
 import { Link } from "react-router-dom";
+import { getSessionId } from "../utils/SessionId"; 
 
 const AccordionItem = ({ title, children, isOpen, onToggle }) => {
   return (
@@ -36,16 +37,6 @@ const ProductDetail = () => {
   const { showNotification } = useNotification();
   const size = product?.sizes || "";
 
-  const getSessionId = () => {
-    let sessionId = localStorage.getItem("session_id");
-    if (!sessionId) {
-      sessionId =
-        "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem("session_id", sessionId);
-    }
-    return sessionId;
-  };
-
   useEffect(() => {
     fetch(`https://blomengdalis-tester.com/backend/get-products.php?id=${id}`)
       .then((res) => res.json())
@@ -60,8 +51,7 @@ const ProductDetail = () => {
   }, [product]);
 
   const addToCart = async () => {
-    const sessionId = getSessionId();
-
+    const sessionId = getSessionId(); 
     try {
       const response = await axios.post(
         "https://blomengdalis-tester.com/backend/add_to_cart.php",
@@ -94,7 +84,6 @@ const ProductDetail = () => {
     <div>
       <div className="product-detail container max-w-screen-xl max-w-95 py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-start">
-          {/* قسم الصورة */}
           <div className="w-full bg-gray-50 flex justify-center items-center p-0 md:p-5 min-h-[400px] md:min-h-[600px]">
             <img
               src={`https://blomengdalis-tester.com/backend/uploads/${product.main_image}`}
@@ -103,13 +92,11 @@ const ProductDetail = () => {
             />
           </div>
 
-          {/* قسم التفاصيل */}
           <div className="flex flex-col gap-2 md:gap-3 w-full">
             <h4 className="text-small">{product.name}</h4>
             <h5 className="text-small">{product.collection}</h5>
             <span className="Sali inline-block">الأكثر مبيعاً</span>
 
-            {/* قسم الخصومات */}
             {product.discount_percent &&
             parseFloat(product.discount_percent) > 0 ? (
               <div>
@@ -185,7 +172,6 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            {/* قسم الأكورديون - الوصف والشحن */}
             <div className="mt-1 md:mt-2 border-gray-200">
               <AccordionItem
                 title="الوصف"
@@ -247,9 +233,7 @@ const ProductDetail = () => {
 
                     <p className="text-sm text-gray-600 leading-6">
                       استلمها في المتجر خلال ساعتين بسعر 360. Mall Store، سنتلقى
-                      بريداً إلكترونياً عندما يكون جاهزاً للتحصيل. (الاستلام في
-                      المتجر خلال ساعتين في متجر ذي مول. سنتلقى بريداً
-                      إلكترونياً عندما يكون جاهزاً للاستلام)
+                      بريداً إلكترونياً عندما يكون جاهزاً للتحصيل.
                     </p>
                   </div>
                 </div>
