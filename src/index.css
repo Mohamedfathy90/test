@@ -32,10 +32,10 @@ body {
 ========================= */
 
 /* 🔹 Large Title – 24px */
-.text-title-lg {
+.text-title-sm{
   font-weight: 400;
-  font-size: 24px;
-  line-height: 30px;
+  font-size: 14px;
+  line-height: 20px;
   color: rgb(17, 17, 17);
 }
 
@@ -82,7 +82,7 @@ body {
 .text-small{
   font-weight:400;
   font-size: 16px;
-   line-height: 16px;
+  line-height: 16px;
  color: rgb(17, 17, 17);
 
    

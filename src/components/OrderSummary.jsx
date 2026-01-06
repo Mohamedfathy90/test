@@ -1,7 +1,40 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ShoppingCart, Package, Gift } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { getSessionId } from "../utils/SessionId";
 
-export default function OrderSummary({ totalAmount, taxAmount }) {
+export default function OrderSummary({
+  totalAmount,
+  taxAmount,
+  cartItems: propsCartItems,
+}) {
+  const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState(propsCartItems || []);
+  const sessionId = getSessionId();
+
+  useEffect(() => {
+    if (!propsCartItems || propsCartItems.length === 0) {
+      fetchCartItems();
+    }
+  }, [propsCartItems]);
+
+  const fetchCartItems = async () => {
+    try {
+      const response = await axios.get(
+        `https://blomengdalis-tester.com/backend/get_cart.php?session_id=${sessionId}`
+      );
+      setCartItems(response.data);
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+    }
+  };
+
+  // التغيير الوحيد: الزرار يروح على صفحة OrderSummaryPage
+  const handleCheckout = () => {
+    navigate("/order-summary");
+  };
+
   const tabbyInstallment = ((totalAmount + parseFloat(taxAmount)) / 4).toFixed(
     3
   );
@@ -24,7 +57,7 @@ export default function OrderSummary({ totalAmount, taxAmount }) {
         </div>
 
         {/* Order summary */}
-        <div className=" pt-6">
+        <div className="pt-6">
           <h2 className="text-[16px] font-bold mb-4">ملخص الطلب</h2>
 
           <div className="flex justify-between text-[13px] mb-3">
@@ -66,8 +99,11 @@ export default function OrderSummary({ totalAmount, taxAmount }) {
             </p>
           </div>
 
-          {/* Checkout button */}
-          <button className="w-full h-[46px] bg-black text-white font-semibold text-[14px] flex items-center justify-center gap-2 mb-3">
+          {/* Checkout button - يروح على صفحة Order Summary */}
+          <button
+            onClick={handleCheckout}
+            className="w-full h-[46px] bg-black text-white font-semibold text-[14px] flex items-center justify-center gap-2 mb-3 hover:bg-gray-800 transition-colors"
+          >
             <ShoppingCart className="w-4 h-4" />
             إكمال عملية الشراء
           </button>
@@ -83,14 +119,17 @@ export default function OrderSummary({ totalAmount, taxAmount }) {
           <img
             className="h-5"
             src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
+            alt="Mastercard"
           />
           <img
             className="h-5"
             src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg"
+            alt="American Express"
           />
           <img
             className="h-6"
             src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
+            alt="PayPal"
           />
           <span className="border border-[#bbb] px-2 py-[2px] text-[11px] font-bold">
             COD

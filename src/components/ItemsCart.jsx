@@ -52,7 +52,7 @@ const ItemCart = ({ item, removeItem, updateQuantity }) => {
         <div className="col-span-12 md:hidden">
           <div className="flex items-start gap-4 ">
             {/* Image Column */}
-            <div className=" w-24 h-32 flex-shrink-0 ">
+            <div className=" w-24 h-32 flex-shrink-0 bg-card">
               <img
                 src={`https://blomengdalis-tester.com/backend/uploads/${item.main_image}`}
                 alt={item.name}

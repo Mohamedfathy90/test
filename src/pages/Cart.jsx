@@ -11,9 +11,8 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const { updateCartCount } = useCart();
-  // const navigate = useNavigate();
 
-  const sessionId = getSessionId(); 
+  const sessionId = getSessionId();
 
   useEffect(() => {
     fetchCart();
@@ -34,7 +33,6 @@ const Cart = () => {
 
   const updateQuantity = async (productId, action) => {
     try {
-      // amazonq-ignore-next-line
       await axios.post(
         "https://blomengdalis-tester.com/backend/update-cart.php",
         {
@@ -117,7 +115,11 @@ const Cart = () => {
         </div>
 
         <div className="lg:col-span-1">
-          <OrderSummary totalAmount={totalAmount} taxAmount={taxAmount} />
+          <OrderSummary
+            totalAmount={totalAmount}
+            taxAmount={taxAmount}
+            cartItems={cartItems}
+          />
         </div>
       </div>
     </div>

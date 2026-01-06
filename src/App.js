@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
@@ -15,31 +20,38 @@ import { UserProvider } from "./context/context";
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import OrderSummaryPage from "./pages/OrderSummary";
+function AppLayout() {
+  const location = useLocation();
+  const hideHeaderRoutes = ["/order-summary", "/checkout"];
+  const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
+
+  return (
+    <>
+      {shouldShowHeader && <Header />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/Favorites" element={<Favorites />} />
+        <Route path="/AddProduct" element={<AddProduct />} />
+        <Route path="/order-summary" element={<OrderSummaryPage />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-error" element={<PaymentError />} />
+      </Routes>
+    </>
+  );
+}
 
 function App() {
-  // const handleLoginSuccess = (user) => {
-  //   console.log("تم تسجيل الدخول:", user);
-  //   setUser(user);
-  // };
-  // const [user, setUser] = useState(null);
-
   return (
     <UserProvider>
       <CartProvider>
         <FavoritesProvider>
           <NotificationProvider>
             <Router>
-              <Header />
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/product/:id" element={<ProductDetails />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/Favorites" element={<Favorites />} />
-                <Route path="/AddProduct" element={<AddProduct />} />
-                <Route path="/payment-success" element={<PaymentSuccess />} />
-                <Route path="/payment-error" element={<PaymentError />} />
-              </Routes>
+              <AppLayout />
             </Router>
           </NotificationProvider>
         </FavoritesProvider>
