@@ -7,7 +7,10 @@ import { getSessionId } from "../utils/SessionId";
 
 const ItemCart = ({ item, removeItem, updateQuantity }) => {
   const itemPrice =
-    item.price_after || item.original_price || item.price_before || 0;
+    parseFloat(item.price_after) ||
+    parseFloat(item.original_price) ||
+    parseFloat(item.price_before) ||
+    0;
   const totalPrice = (itemPrice * item.quantity).toFixed(3);
 
   const { favoritesIds, fetchFavoritesIds } = useFavorites();

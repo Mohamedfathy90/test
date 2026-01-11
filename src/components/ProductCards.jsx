@@ -106,7 +106,7 @@ const ProductCards = () => {
                   <span
                     style={{ textDecoration: "line-through", color: "#888" }}
                   >
-                    KWD {product.price_before}
+                    KWD {product.original_price}
                   </span>
                   <span style={{ color: "#B12009", marginRight: "8px" }}>
                     | {product.discount_percent}% خصم

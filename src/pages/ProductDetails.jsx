@@ -104,7 +104,7 @@ const ProductDetail = () => {
                 <div className="price-main mb-2">KWD {product.price_after}</div>
                 <div className="price-old-discount">
                   <span className="line-through text-gray-500">
-                    KWD {product.price_before}
+                    KWD {product.original_price}
                   </span>
                   <span className="text-red-700 mr-2">
                     | {product.discount_percent}% خصم

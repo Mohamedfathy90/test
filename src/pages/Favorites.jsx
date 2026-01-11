@@ -183,7 +183,7 @@ function Favorites() {
                           KWD {product.price_after}
                         </span>
                         <span className="text-xs text-gray-400 line-through">
-                          KWD {product.price_before}
+                          KWD {product.original_price}
                         </span>
                       </div>
                     ) : (
