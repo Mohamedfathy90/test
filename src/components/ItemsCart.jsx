@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { useFavorites } from "../context/FavoritesContext";
 import { useNotification } from "../context/NotificationContext";
+import { useCurrency } from "../context/CurrencyContext";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { getSessionId } from "../utils/SessionId"; 
 
@@ -11,10 +12,11 @@ const ItemCart = ({ item, removeItem, updateQuantity }) => {
     parseFloat(item.original_price) ||
     parseFloat(item.price_before) ||
     0;
-  const totalPrice = (itemPrice * item.quantity).toFixed(3);
+  const totalPrice = itemPrice * item.quantity;
 
   const { favoritesIds, fetchFavoritesIds } = useFavorites();
   const { showNotification } = useNotification();
+  const { formatPrice } = useCurrency();
 
   const isFavorited = favoritesIds.includes(parseInt(item.product_id));
 
@@ -92,7 +94,7 @@ const ItemCart = ({ item, removeItem, updateQuantity }) => {
                 <span className="text-small-dark">{item.product_id}</span>
               </div>
 
-              <p className="text-medium-dark mb-3">KWD {totalPrice}</p>
+              <p className="text-medium-dark mb-3">{formatPrice(totalPrice)}</p>
 
               {/* Size + Quantity Controls in one row */}
               <div className="flex items-center justify-between mb-3">
@@ -186,7 +188,7 @@ const ItemCart = ({ item, removeItem, updateQuantity }) => {
               <span className="text-small">معرّف المنتج:</span>
               <span className="text-small-dark">{item.product_id}</span>
             </div>
-            <p className="text-medium-dark">KWD {totalPrice}</p>
+            <p className="text-medium-dark">{formatPrice(totalPrice)}</p>
           </div>
 
           {/* العمليات والأزرار */}

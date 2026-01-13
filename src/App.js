@@ -20,6 +20,8 @@ import { UserProvider } from "./context/context";
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import { CurrencyProvider } from "./context/CurrencyContext";
+import CurrencyPopup from "./components/CurrencyPopup";
 import OrderSummaryPage from "./pages/OrderSummary";
 function AppLayout() {
   const location = useLocation();
@@ -50,9 +52,12 @@ function App() {
       <CartProvider>
         <FavoritesProvider>
           <NotificationProvider>
-            <Router>
-              <AppLayout />
-            </Router>
+            <CurrencyProvider>
+              <Router>
+                <AppLayout />
+                <CurrencyPopup />
+              </Router>
+            </CurrencyProvider>
           </NotificationProvider>
         </FavoritesProvider>
       </CartProvider>

@@ -6,6 +6,7 @@ import { useFavorites } from "../context/FavoritesContext";
 import { IoTrashOutline } from "react-icons/io5";
 import { useCart } from "../context/CartContext";
 import { useNotification } from "../context/NotificationContext";
+import { useCurrency } from "../context/CurrencyContext";
 import { getSessionId } from "../utils/SessionId"; 
 
 function Favorites() {
@@ -15,6 +16,7 @@ function Favorites() {
   const { fetchFavoritesIds } = useFavorites();
   const { updateCartCount } = useCart();
   const { showNotification } = useNotification();
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     fetchFavorites();
@@ -180,16 +182,16 @@ function Favorites() {
                     {hasDiscount ? (
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-sm font-semibold">
-                          KWD {product.price_after}
+                          {formatPrice(parseFloat(product.price_after))}
                         </span>
                         <span className="text-xs text-gray-400 line-through">
-                          KWD {product.original_price}
+                          {formatPrice(parseFloat(product.original_price))}
                         </span>
                       </div>
                     ) : (
                       <div className="mb-3">
                         <span className="text-sm font-semibold">
-                          KWD {product.original_price}
+                          {formatPrice(parseFloat(product.original_price))}
                         </span>
                       </div>
                     )}

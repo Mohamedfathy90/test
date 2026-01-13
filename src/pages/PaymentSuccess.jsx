@@ -28,13 +28,13 @@ const PaymentSuccess = () => {
       dir="rtl"
       className="min-h-screen bg-gray-50 flex items-center justify-center p-4"
     >
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+      <div className="bg-white  p-8 max-w-md w-full text-center">
         <div className="mb-6">
           <CheckCircle className="w-20 h-20 text-green-500 mx-auto" />
         </div>
 
         <h1 className="text-2xl font-bold text-gray-800 mb-4">
-          تم الدفع بنجاح! 🎉
+          تم الدفع بنجاح
         </h1>
 
         <p className="text-gray-600 mb-2">شكراً لك على طلبك</p>
@@ -57,7 +57,7 @@ const PaymentSuccess = () => {
 
         <button
           onClick={() => navigate("/")}
-          className="w-full bg-black text-white py-3 rounded hover:bg-gray-800 transition"
+          className="w-full bg-black text-white py-2 "
         >
           العودة للصفحة الرئيسية
         </button>

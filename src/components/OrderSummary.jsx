@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ShoppingCart, Package, Gift } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useCurrency } from "../context/CurrencyContext";
 import { getSessionId } from "../utils/SessionId";
 
 export default function OrderSummary({
@@ -12,6 +13,7 @@ export default function OrderSummary({
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState(propsCartItems || []);
   const sessionId = getSessionId();
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     if (!propsCartItems || propsCartItems.length === 0) {
@@ -62,7 +64,7 @@ export default function OrderSummary({
 
           <div className="flex justify-between text-[13px] mb-3">
             <span className="text-[#444]">المجموع الفرعي</span>
-            <span className="font-semibold">KWD {totalAmount.toFixed(3)}</span>
+            <span className="font-semibold">{formatPrice(totalAmount)}</span>
           </div>
 
           <div className="flex justify-between items-center text-[13px] mb-3">
@@ -78,7 +80,7 @@ export default function OrderSummary({
           {/* الضريبة 5% */}
           <div className="flex justify-between text-[13px] mb-4">
             <span className="text-[#444]">الضريبة (5%)</span>
-            <span className="font-semibold">KWD {taxAmount}</span>
+            <span className="font-semibold">{formatPrice(parseFloat(taxAmount))}</span>
           </div>
 
           {/* Free shipping */}
@@ -92,7 +94,7 @@ export default function OrderSummary({
           <div className="border-t border-[#dcdcdc] pt-4 mb-4">
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-semibold">المبلغ الإجمالي</span>
-              <span className="text-[18px] font-bold">KWD {finalTotal}</span>
+              <span className="text-[18px] font-bold">{formatPrice(parseFloat(finalTotal))}</span>
             </div>
             <p className="text-[11px] text-[#777] mt-1">
               يشمل جميع الضرائب و الرسوم
@@ -109,7 +111,7 @@ export default function OrderSummary({
           </button>
 
           <p className="text-center text-[11px] text-[#555] mb-4">
-            4 دفعات بدون فوائد بقيمة KWD {tabbyInstallment}{" "}
+            4 دفعات بدون فوائد بقيمة {formatPrice(parseFloat(tabbyInstallment))}{" "}
             <span className="font-bold">tabby</span>
           </p>
         </div>

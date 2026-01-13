@@ -5,6 +5,7 @@ import FooterSection from "../components/FooterSection";
 import ProductButtons from "../components/ProductButtons";
 import { useCart } from "../context/CartContext";
 import { useNotification } from "../context/NotificationContext";
+import { useCurrency } from "../context/CurrencyContext";
 import { Link } from "react-router-dom";
 import { getSessionId } from "../utils/SessionId"; 
 
@@ -35,6 +36,7 @@ const ProductDetail = () => {
 
   const { updateCartCount } = useCart();
   const { showNotification } = useNotification();
+  const { formatPrice } = useCurrency();
   const size = product?.sizes || "";
 
   useEffect(() => {
@@ -101,10 +103,10 @@ const ProductDetail = () => {
             parseFloat(product.discount_percent) > 0 ? (
               <div>
                 <div className="discount-label">خصومات</div>
-                <div className="price-main mb-2">KWD {product.price_after}</div>
+                <div className="price-main mb-2">{formatPrice(parseFloat(product.price_after))}</div>
                 <div className="price-old-discount">
                   <span className="line-through text-gray-500">
-                    KWD {product.original_price}
+                    {formatPrice(parseFloat(product.original_price))}
                   </span>
                   <span className="text-red-700 mr-2">
                     | {product.discount_percent}% خصم
@@ -113,7 +115,7 @@ const ProductDetail = () => {
               </div>
             ) : (
               <div className="mt-2">
-                <div className="price-main">KWD {product.original_price}</div>
+                <div className="price-main">{formatPrice(parseFloat(product.original_price))}</div>
               </div>
             )}
 

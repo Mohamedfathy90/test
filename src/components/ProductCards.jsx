@@ -5,6 +5,7 @@ import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useFavorites } from "../context/FavoritesContext";
 import { useNotification } from "../context/NotificationContext";
+import { useCurrency } from "../context/CurrencyContext";
 import axios from "axios";
 import { getSessionId } from "../utils/SessionId"; 
 
@@ -13,6 +14,7 @@ const ProductCards = () => {
 
   const { favoritesIds, fetchFavoritesIds } = useFavorites();
   const { showNotification } = useNotification();
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     fetchProducts();
@@ -101,12 +103,12 @@ const ProductCards = () => {
             parseFloat(product.discount_percent) > 0 ? (
               <div className="">
                 <div className="discount-label">خصومات</div>
-                <div className="price-main">KWD {product.price_after}</div>
+                <div className="price-main">{formatPrice(parseFloat(product.price_after))}</div>
                 <div className="price-old-discount">
                   <span
                     style={{ textDecoration: "line-through", color: "#888" }}
                   >
-                    KWD {product.original_price}
+                    {formatPrice(parseFloat(product.original_price))}
                   </span>
                   <span style={{ color: "#B12009", marginRight: "8px" }}>
                     | {product.discount_percent}% خصم
@@ -115,7 +117,7 @@ const ProductCards = () => {
               </div>
             ) : (
               <div className="">
-                <div className="price-main">KWD {product.original_price}</div>
+                <div className="price-main">{formatPrice(parseFloat(product.original_price))}</div>
               </div>
             )}
           </div>

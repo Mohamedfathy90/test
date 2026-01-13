@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useCurrency } from "../context/CurrencyContext";
 import applePayIcon from "../assets/checkout-applepay.svg";
 import codIcon from "../assets/checkout-cod.svg";
 import tabbyIcon from "../assets/checkout-tabby.svg";
@@ -17,6 +18,7 @@ const CheckoutOrderSummary = ({
   finalTotal,
 }) => {
   const [showOrderSummary, setShowOrderSummary] = useState(false);
+  const { formatPrice } = useCurrency();
 
   return (
     <>
@@ -69,10 +71,10 @@ const CheckoutOrderSummary = ({
                         </p>
                         <div className="flex items-center justify-between flex-wrap gap-1">
                           <span className="text-sm font-bold text-gray-900">
-                            KWD {(price * item.quantity).toFixed(3)}
+                            {formatPrice(price * item.quantity)}
                           </span>
                           <span className="text-xs text-gray-400">
-                            {item.quantity} × KWD {price.toFixed(3)}
+                            {item.quantity} × {formatPrice(price)}
                           </span>
                         </div>
                       </div>
@@ -88,7 +90,7 @@ const CheckoutOrderSummary = ({
             <div className="space-y-2.5 text-sm">
               <div className="flex justify-between">
                 <span>المجموع الفرعي</span>
-                <span>KWD {totalAmount.toFixed(3)}</span>
+                <span>{formatPrice(totalAmount)}</span>
               </div>
 
               <div className="flex justify-between text-gray-600">
@@ -98,12 +100,12 @@ const CheckoutOrderSummary = ({
 
               <div className="flex justify-between">
                 <span>الضريبة (5%)</span>
-                <span>KWD {taxAmount}</span>
+                <span>{formatPrice(parseFloat(taxAmount))}</span>
               </div>
 
               <div className="flex justify-between pt-3 border-t border-gray-300 font-bold text-base">
                 <span>المبلغ الإجمالي</span>
-                <span>KWD {finalTotal}</span>
+                <span>{formatPrice(parseFloat(finalTotal))}</span>
               </div>
 
               <p className="text-xs text-gray-500 pt-1">
@@ -222,7 +224,7 @@ const CheckoutOrderSummary = ({
                         </h3>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-sm font-bold text-gray-900">
-                            KWD {(price * item.quantity).toFixed(3)}
+                            {formatPrice(price * item.quantity)}
                           </span>
                         </div>
                       </div>
@@ -235,7 +237,7 @@ const CheckoutOrderSummary = ({
               <div className="space-y-2 text-xs sm:text-sm pt-3 border-t border-gray-300">
                 <div className="flex justify-between">
                   <span>المجموع الفرعي</span>
-                  <span>KWD {totalAmount.toFixed(3)}</span>
+                  <span>{formatPrice(totalAmount)}</span>
                 </div>
 
                 <div className="flex justify-between text-gray-600">
@@ -245,12 +247,12 @@ const CheckoutOrderSummary = ({
 
                 <div className="flex justify-between">
                   <span>الضريبة (5%)</span>
-                  <span>KWD {taxAmount}</span>
+                  <span>{formatPrice(parseFloat(taxAmount))}</span>
                 </div>
 
                 <div className="flex justify-between pt-3 border-t border-gray-300 font-bold text-sm sm:text-base">
                   <span>المبلغ الإجمالي</span>
-                  <span>KWD {finalTotal}</span>
+                  <span>{formatPrice(parseFloat(finalTotal))}</span>
                 </div>
 
                 <p className="text-xs text-gray-500 pt-1">
@@ -275,7 +277,7 @@ const CheckoutOrderSummary = ({
                     المبلغ الإجمالي
                   </span>
                   <span className="text-base sm:text-lg font-bold text-gray-900">
-                    KWD {finalTotal}
+                    {formatPrice(parseFloat(finalTotal))}
                   </span>
                 </div>
                 <p className="text-xs text-gray-500">
