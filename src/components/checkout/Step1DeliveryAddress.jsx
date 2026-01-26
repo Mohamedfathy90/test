@@ -1,6 +1,7 @@
 import React from "react";
 import StepCircle from "./StepCircle";
 import Box from "../../assets/box.webp";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const Step1DeliveryAddress = ({
   formData,
@@ -11,6 +12,7 @@ const Step1DeliveryAddress = ({
   onNext,
   validateStep1,
 }) => {
+  const { selectedCountry } = useCurrency();
   return (
     <div className="space-y-5">
       {/* عنوان الخطوة مع الرقم */}
@@ -55,9 +57,7 @@ const Step1DeliveryAddress = ({
               type="button"
               onClick={() => setFormData({ ...formData, title: "mr" })}
               className={`border py-2 ${
-                formData.title === "mr"
-                  ? "border-black "
-                  : "border-gray-300"
+                formData.title === "mr" ? "border-black " : "border-gray-300"
               }`}
             >
               السيد
@@ -67,9 +67,7 @@ const Step1DeliveryAddress = ({
               type="button"
               onClick={() => setFormData({ ...formData, title: "mrs" })}
               className={`border py-2 ${
-                formData.title === "mrs"
-                  ? "border-black "
-                  : "border-gray-300"
+                formData.title === "mrs" ? "border-black " : "border-gray-300"
               }`}
             >
               السيدة
@@ -130,26 +128,6 @@ const Step1DeliveryAddress = ({
         </div>
       </div>
 
-      {/* City Dropdown */}
-      <div>
-        <label className="block text-sm font-medium mb-2 text-right">
-          البلد
-        </label>
-        <select
-          name="country"
-          value={formData.country}
-          onChange={handleChange}
-          className="w-full px-2 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-black text-right bg-white"
-        >
-          <option value="الكويت">الكويت</option>
-          <option value="الإمارات">الإمارات</option>
-          <option value="السعودية">السعودية</option>
-          <option value="عمان">عمان</option>
-          <option value="البحرين">البحرين</option>
-          <option value="قطر">قطر</option>
-        </select>
-      </div>
-
       <div>
         <label className="block text-sm font-medium mb-2 text-right">
           المدينة
@@ -160,9 +138,7 @@ const Step1DeliveryAddress = ({
           value={formData.city}
           onChange={handleChange}
           className={`w-full px-2 py-2 border ${
-            emptyFields.includes("city")
-              ? "border-red-500"
-              : "border-gray-300"
+            emptyFields.includes("city") ? "border-red-500" : "border-gray-300"
           } focus:outline-none focus:ring-1 focus:ring-black text-right`}
         />
       </div>
@@ -205,7 +181,7 @@ const Step1DeliveryAddress = ({
 
       {/* Phone Number */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="col-span-1">
+        {/* <div className="col-span-1">
           <label className="block text-sm font-medium mb-2 text-right">
             رمز البلد
           </label>
@@ -221,9 +197,9 @@ const Step1DeliveryAddress = ({
             <option value="+968"> +968</option>
             <option value="+973"> +973</option>
             <option value="+974"> +974</option>
-          </select>
-        </div>
-        <div className="col-span-2">
+          </select> 
+        </div>*/}
+        <div className="col-span-3">
           <label className="block text-sm font-medium mb-2 text-right">
             رقم الهاتف
           </label>

@@ -60,16 +60,16 @@ export const CurrencyProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await axios.get(
-        "https://api.fastforex.io/fetch-all",
+        "https://api.forexrateapi.com/v1/latest",
         {
           headers: {
-            "X-API-Key": "093a0efd2d-96aa71a7cd-t8rbbx",
+            "X-API-Key": "c922137bf472a9f93cd6f06de2aa2ae5",
           },
           params: {
-            from: "KWD", // Base currency is Kuwait
-            api_key: "093a0efd2d-96aa71a7cd-t8rbbx",
+            from: "KWD",
+            api_key: "c922137bf472a9f93cd6f06de2aa2ae5",
           },
-        }
+        },
       );
 
       if (response.data && response.data.results) {

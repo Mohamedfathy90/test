@@ -69,10 +69,9 @@ export default function OrderSummary({
 
           <div className="flex justify-between items-center text-[13px] mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-[#444]">تقدير رسوم الشحن</span>
+              <span className="text-[#444]"> رسوم الشحن</span>
               <span className="underline text-[#2b6cb0] cursor-pointer">
-                التوصيل للكويت
-              </span>
+من الكويت              </span>
             </div>
             <span className="text-[#444]">مجاناً</span>
           </div>

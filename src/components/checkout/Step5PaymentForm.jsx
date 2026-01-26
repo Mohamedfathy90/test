@@ -50,7 +50,7 @@ const Step5PaymentForm = ({
               <strong>المبنى:</strong> {formData.building}
             </p>
             <p>
-              <strong>الهاتف:</strong> {formData.countryCode} {formData.phone}
+              <strong>الهاتف:</strong>  {formData.phone}
             </p>
           </div>
         )}
@@ -118,22 +118,55 @@ const Step5PaymentForm = ({
 
       {/* Embedded Payment Containers */}
       {selectedPaymentMethod === "Card" && (
-        <div
-          id="card-payment-container"
-          className="min-h-[400px] mb-4"
-        ></div>
+        <div className="mb-4">
+          <div
+            id="card-payment-container"
+            className="min-h-[400px] w-full"
+            style={{ position: 'relative' }}
+          >
+            {/* Loading indicator */}
+            <div className="flex items-center justify-center min-h-[400px] text-gray-500">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-2"></div>
+                <p>جاري تحميل فورم الدفع...</p>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
       {selectedPaymentMethod === "ApplePay" && (
-        <div
-          id="applepay-payment-container"
-          className="min-h-[400px] mb-4"
-        ></div>
+        <div className="mb-4">
+          <div
+            id="applepay-payment-container"
+            className="min-h-[400px] w-full"
+            style={{ position: 'relative' }}
+          >
+            {/* Loading indicator */}
+            <div className="flex items-center justify-center min-h-[400px] text-gray-500">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-2"></div>
+                <p>جاري تحميل فورم الدفع...</p>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
       {selectedPaymentMethod === "GooglePay" && (
-        <div
-          id="googlepay-payment-container"
-          className="min-h-[400px] mb-4"
-        ></div>
+        <div className="mb-4">
+          <div
+            id="googlepay-payment-container"
+            className="min-h-[400px] w-full"
+            style={{ position: 'relative' }}
+          >
+            {/* Loading indicator */}
+            <div className="flex items-center justify-center min-h-[400px] text-gray-500">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-2"></div>
+                <p>جاري تحميل فورم الدفع...</p>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="text-center text-sm text-gray-500 mb-4">

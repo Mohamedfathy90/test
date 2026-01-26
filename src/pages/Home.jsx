@@ -1,6 +1,5 @@
 
 import BeautySection from '../components/BeautySection';
-import Select from '../components/select';
 import FooterSection from '../components/FooterSection';
 import ProductCards from '../components/ProductCards';
 import { Link } from "react-router-dom";
@@ -19,7 +18,7 @@ function Home() {
           </Link>
         </div>
         <BeautySection />
-        <Select />
+
         <ProductCards />
         <FooterSection />
       </div>

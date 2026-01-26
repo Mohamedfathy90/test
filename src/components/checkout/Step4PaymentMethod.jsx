@@ -21,7 +21,7 @@ const Step4PaymentMethod = ({
   error,
 }) => {
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-32 lg:pb-5">
       {/* الخطوة 1 المكتملة */}
       <CompletedStepSection
         stepNumber={1}
@@ -51,7 +51,7 @@ const Step4PaymentMethod = ({
               <strong>المبنى:</strong> {formData.building}
             </p>
             <p>
-              <strong>الهاتف:</strong> {formData.countryCode} {formData.phone}
+              <strong>الهاتف:</strong>  {formData.phone}
             </p>
           </div>
         )}

@@ -41,7 +41,7 @@ const Step2Shipping = ({
               <strong>المبنى:</strong> {formData.building}
             </p>
             <p>
-              <strong>الهاتف:</strong> {formData.countryCode} {formData.phone}
+              <strong>الهاتف:</strong>  {formData.phone}
             </p>
           </div>
         )}

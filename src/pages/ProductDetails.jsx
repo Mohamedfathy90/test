@@ -103,7 +103,9 @@ const ProductDetail = () => {
             parseFloat(product.discount_percent) > 0 ? (
               <div>
                 <div className="discount-label">خصومات</div>
-                <div className="price-main mb-2">{formatPrice(parseFloat(product.price_after))}</div>
+                <div className="price-main mb-2">
+                  {formatPrice(parseFloat(product.price_after))}
+                </div>
                 <div className="price-old-discount">
                   <span className="line-through text-gray-500">
                     {formatPrice(parseFloat(product.original_price))}
@@ -115,7 +117,9 @@ const ProductDetail = () => {
               </div>
             ) : (
               <div className="mt-2">
-                <div className="price-main">{formatPrice(parseFloat(product.original_price))}</div>
+                <div className="price-main">
+                  {formatPrice(parseFloat(product.original_price))}
+                </div>
               </div>
             )}
 
@@ -131,11 +135,30 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex flex-col w-full mt-1 md:mt-2">
-              <ProductButtons
-                selectedSize={selectedSize}
-                onAddToCart={addToCart}
-                productId={product.id}
-              />
+              {product.is_available === "0" || product.is_available === 0 ? (
+                <>
+                  <div className="w-full border border-red-700 bg-white  p-2 mb-3">
+                    <span className=" font-medium">
+                      انتهت الكمية
+                    </span>
+                  </div>
+                  <div className="w-full bg-blue-50 border color-box border-box p-3 mb-3 ">
+                    <p className="text-sm text-blue-800">
+                      عذرا هذا المنتج غير متوفر حاليا نتمح هذا المنتج حتى لا
+                      نفوتك ما إذا أصبح متاحا مرة أخرى.
+                    </p>
+                  </div>
+                  <button className="w-full bg-black text-white py-3  font-medium">
+                    يرجى إعلامي
+                  </button>
+                </>
+              ) : (
+                <ProductButtons
+                  selectedSize={selectedSize}
+                  onAddToCart={addToCart}
+                  productId={product.id}
+                />
+              )}
               <div className="mt-3 md:mt-4 flex items-center gap-2">
                 <p className="text-paragraph mb-0 ">مشاركة :</p>
                 <Link

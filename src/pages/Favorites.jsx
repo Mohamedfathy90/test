@@ -195,12 +195,19 @@ function Favorites() {
                         </span>
                       </div>
                     )}
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="w-full bg-black text-white py-2 text-sm hover:bg-gray-800 transition-colors"
-                    >
-                      اضف للحقيبة
-                    </button>
+                    {/* إخفاء زر أضف للسلة إذا كان المنتج منتهي الكمية */}
+                    {(product.is_available === null || product.is_available === undefined || product.is_available === 1 || product.is_available === "1") ? (
+                      <button
+                        onClick={() => addToCart(product)}
+                        className="w-full bg-black text-white py-2 text-sm hover:bg-gray-800 transition-colors"
+                      >
+                        اضف للحقيبة
+                      </button>
+                    ) : (
+                      <div className="w-full border border-red-300 bg-red-50 py-2 text-sm text-red-700 text-center">
+                        انتهت الكمية
+                      </div>
+                    )}
 
                     <button
                       onClick={() => removeFavorite(product.id)}

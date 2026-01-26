@@ -117,6 +117,24 @@ const Checkout = () => {
           0,
       }));
 
+      // ✅ التأكد من أن السعر رقم صحيح
+      const totalPrice = typeof finalTotal === 'number' ? finalTotal : parseFloat(finalTotal);
+      
+      if (isNaN(totalPrice) || totalPrice <= 0) {
+        console.error("Invalid total price:", finalTotal, typeof finalTotal);
+        throw new Error("السعر غير صحيح");
+      }
+
+      // ✅ تسجيل السعر المرسل
+      console.log("Creating order with price:", {
+        total_price: totalPrice,
+        total_price_type: typeof totalPrice,
+        finalTotal_original: finalTotal,
+        finalTotal_type: typeof finalTotal,
+        subtotal,
+        taxAmount
+      });
+
       const payload = {
         session_id: sessionId,
         first_name: formData.firstName,
@@ -129,7 +147,7 @@ const Checkout = () => {
         country_code: formData.countryCode,
         national_id: formData.nationalId,
         title: formData.title,
-        total_price: finalTotal,
+        total_price: totalPrice, // إرسال كرقم وليس string
         items,
       };
 
@@ -164,82 +182,247 @@ const Checkout = () => {
       setCurrentStep(5);
 
       // الخطوة 4: تهيئة Embedded Payment بعد الانتقال للخطوة 5
-      setTimeout(() => {
-        if (window.myfatoorah) {
-          const containerId = getContainerId(selectedPaymentMethod);
-          const container = document.getElementById(containerId);
+      // استخدام requestAnimationFrame و setTimeout لضمان جاهزية DOM
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          // التحقق من وجود مكتبة MyFatoorah مع محاولات متعددة
+          const checkMyFatoorah = (attempts = 0) => {
+            if (window.myfatoorah && typeof window.myfatoorah.init === 'function') {
+              initPayment();
+            } else if (attempts < 20) {
+              // محاولة حتى 20 مرة (2 ثانية)
+              setTimeout(() => checkMyFatoorah(attempts + 1), 100);
+            } else {
+              console.error("MyFatoorah library not loaded after 20 attempts");
+              setError("نظام الدفع غير متاح. يرجى تحديث الصفحة والمحاولة مرة أخرى.");
+              setLoading(false);
+            }
+          };
 
-          // التأكد من وجود الـ container قبل التهيئة
-          if (!container) {
-            console.error(`Container ${containerId} not found`);
-            setError("حدث خطأ في تحميل فورم الدفع");
+          const initPayment = () => {
+
+          const containerId = getContainerId(selectedPaymentMethod);
+          if (!containerId) {
+            console.error("Invalid payment method:", selectedPaymentMethod);
+            setError("طريقة الدفع غير صحيحة");
+            setLoading(false);
             return;
           }
 
-          // تنظيف الـ container أولاً
-          container.innerHTML = "";
+          // محاولة متعددة للعثور على الـ container
+          let container = document.getElementById(containerId);
+          let attempts = 0;
+          const maxAttempts = 30; // زيادة المحاولات
 
-          const config = {
-            sessionId: mfSession,
-            countryCode: countryCode,
-            currencyCode: "KWD",
-             language: "AR",
-            amount: finalTotal,
-            callback: (response) => {
-              console.log("MyFatoorah callback response:", response);
-
-              // التحقق من وجود order_id
-              if (!order_id) {
-                setError("خطأ: لم يتم العثور على رقم الطلب");
-                console.error("Order ID is missing");
+          const tryInit = () => {
+            container = document.getElementById(containerId);
+            
+            if (!container) {
+              attempts++;
+              if (attempts < maxAttempts) {
+                setTimeout(tryInit, 100);
+                return;
+              } else {
+                console.error(`Container ${containerId} not found after ${maxAttempts} attempts`);
+                setError("حدث خطأ في تحميل فورم الدفع. يرجى تحديث الصفحة.");
+                setLoading(false);
                 return;
               }
+            }
 
-              // عند نجاح إدخال بيانات الكارت
-              if (response && response.isSuccess) {
-                // التحقق من وجود SessionId في الاستجابة
-                const paymentSessionId =
-                  response.SessionId || response.sessionId || mfSession;
+            // تنظيف الـ container أولاً
+            try {
+              container.innerHTML = "";
+            } catch (e) {
+              console.error("Error clearing container:", e);
+            }
 
-                if (paymentSessionId) {
-                  console.log(
-                    "Executing payment with SessionId:",
-                    paymentSessionId,
-                    "OrderId:",
-                    order_id
-                  );
-                  // إرسال للباك إند لتنفيذ الدفع
-                  executePayment(paymentSessionId, order_id);
-                } else {
-                  setError("لم يتم الحصول على معرف الجلسة من نظام الدفع");
-                  console.error("No SessionId in response:", response);
+            // ✅ التأكد من أن السعر رقم صحيح
+            const paymentAmount = typeof finalTotal === 'number' ? finalTotal : parseFloat(finalTotal);
+            
+            if (isNaN(paymentAmount) || paymentAmount <= 0) {
+              console.error("Invalid payment amount:", finalTotal, typeof finalTotal);
+              setError("السعر غير صحيح");
+              setLoading(false);
+              return;
+            }
+
+            // ✅ تسجيل السعر المستخدم في MyFatoorah init
+            console.log("MyFatoorah init amount:", {
+              paymentAmount,
+              paymentAmount_type: typeof paymentAmount,
+              finalTotal_original: finalTotal,
+              finalTotal_type: typeof finalTotal
+            });
+
+            // التحقق من وجود جميع البيانات المطلوبة
+            if (!mfSession || !countryCode) {
+              console.error("Missing session data:", { mfSession, countryCode });
+              setError("بيانات الجلسة غير مكتملة");
+              setLoading(false);
+              return;
+            }
+            
+            const config = {
+              sessionId: mfSession,
+              countryCode: countryCode,
+              currencyCode: "KWD",
+              language: "AR",
+              amount: paymentAmount,
+              displayCurrencyIso: "KWD",
+              callback: (response) => {
+                console.log("MyFatoorah callback response:", response);
+
+                // التحقق من وجود order_id
+                if (!order_id) {
+                  setError("خطأ: لم يتم العثور على رقم الطلب");
+                  console.error("Order ID is missing");
+                  setLoading(false);
+                  return;
                 }
-              } else {
-                // في حالة الفشل
-                const errorMsg =
-                  response?.message ||
-                  response?.error ||
-                  response?.Message ||
-                  "فشل في إدخال بيانات الدفع";
-                setError(errorMsg);
-                console.error("Payment callback failed:", response);
+
+                // التحقق من صحة الاستجابة
+                if (!response) {
+                  console.error("Empty response from MyFatoorah");
+                  setError("لم يتم استلام استجابة من نظام الدفع");
+                  setLoading(false);
+                  return;
+                }
+
+                // عند نجاح إدخال بيانات الكارت
+                if (response.isSuccess === true || response.IsSuccess === true) {
+                  // التحقق من وجود SessionId في الاستجابة
+                  const paymentSessionId =
+                    response.SessionId || 
+                    response.sessionId || 
+                    response.Data?.SessionId ||
+                    mfSession;
+
+                  if (paymentSessionId) {
+                    console.log(
+                      "Executing payment with SessionId:",
+                      paymentSessionId,
+                      "OrderId:",
+                      order_id
+                    );
+                    // إرسال للباك إند لتنفيذ الدفع
+                    executePayment(paymentSessionId, order_id);
+                  } else {
+                    setError("لم يتم الحصول على معرف الجلسة من نظام الدفع");
+                    console.error("No SessionId in response:", response);
+                    setLoading(false);
+                  }
+                } else {
+                  // في حالة الفشل
+                  const errorMsg =
+                    response?.message ||
+                    response?.error ||
+                    response?.Message ||
+                    response?.Data?.Message ||
+                    "فشل في إدخال بيانات الدفع";
+                  setError(errorMsg);
+                  console.error("Payment callback failed:", response);
+                  setLoading(false);
+                }
+              },
+              containerId: containerId,
+              paymentOptions: selectedPaymentMethod ? [selectedPaymentMethod] : [],
+            };
+
+            // التحقق من صحة الـ config قبل التهيئة
+            if (!config.sessionId || !config.containerId || config.paymentOptions.length === 0) {
+              console.error("Invalid MyFatoorah config:", config);
+              console.error("Config details:", {
+                hasSessionId: !!config.sessionId,
+                sessionId: config.sessionId,
+                hasContainerId: !!config.containerId,
+                containerId: config.containerId,
+                paymentOptionsLength: config.paymentOptions.length,
+                paymentOptions: config.paymentOptions
+              });
+              setError("إعدادات الدفع غير صحيحة");
+              setLoading(false);
+              return;
+            }
+            
+            // التحقق من أن الـ container موجود ومرئي
+            const containerRect = container.getBoundingClientRect();
+            if (containerRect.width === 0 || containerRect.height === 0) {
+              console.warn("Container has zero dimensions:", containerRect);
+            }
+            
+            console.log("Container details:", {
+              id: containerId,
+              exists: !!container,
+              width: containerRect.width,
+              height: containerRect.height,
+              visible: containerRect.width > 0 && containerRect.height > 0
+            });
+
+              try {
+                console.log("Initializing MyFatoorah with config:", {
+                  sessionId: config.sessionId,
+                  countryCode: config.countryCode,
+                  currencyCode: config.currencyCode,
+                  amount: config.amount,
+                  containerId: config.containerId,
+                  paymentOptions: config.paymentOptions
+                });
+                
+                // التأكد من أن الـ container فارغ قبل التهيئة
+                container.innerHTML = "";
+                
+                // تهيئة MyFatoorah
+                window.myfatoorah.init(config);
+                
+                console.log("MyFatoorah init called successfully");
+                
+                // إيقاف loading بعد التهيئة
+                setLoading(false);
+                
+                // التحقق من ظهور الحقول بعد فترات متعددة
+                const checkFormLoaded = (attempts = 0) => {
+                  const hasContent = container.children.length > 0 || 
+                                    container.querySelector('iframe') !== null ||
+                                    container.querySelector('form') !== null ||
+                                    container.innerHTML.trim() !== "";
+                  
+                  if (hasContent) {
+                    console.log("MyFatoorah form loaded successfully");
+                    // إخفاء loading indicator إذا كان موجود
+                    const loadingIndicator = container.querySelector('.animate-spin');
+                    if (loadingIndicator) {
+                      loadingIndicator.parentElement.style.display = 'none';
+                    }
+                  } else if (attempts < 10) {
+                    // محاولة حتى 10 مرات (5 ثواني)
+                    setTimeout(() => checkFormLoaded(attempts + 1), 500);
+                  } else {
+                    console.warn("MyFatoorah form may not have loaded. Container is still empty after 5 seconds.");
+                    console.warn("Container HTML:", container.innerHTML);
+                    console.warn("Container children:", container.children.length);
+                    // لا نعرض خطأ هنا، قد يحتاج وقت أكثر أو قد تكون هناك مشكلة في الـ config
+                  }
+                };
+                
+                // بدء التحقق بعد ثانية واحدة
+                setTimeout(() => checkFormLoaded(), 1000);
+              } catch (err) {
+                console.error("Error initializing MyFatoorah:", err);
+                console.error("Error stack:", err.stack);
+                setError("حدث خطأ في تهيئة نظام الدفع: " + (err.message || "خطأ غير معروف"));
                 setLoading(false);
               }
-            },
-            containerId: containerId,
-            paymentOptions: [selectedPaymentMethod],
+            };
+
+            // بدء المحاولة
+            tryInit();
           };
 
-          try {
-            window.myfatoorah.init(config);
-          } catch (err) {
-            console.error("Error initializing MyFatoorah:", err);
-            setError("حدث خطأ في تهيئة نظام الدفع");
-          }
-        } else {
-          setError("نظام الدفع غير متاح");
-        }
-      }, 1000);
+          // بدء التحقق من تحميل MyFatoorah
+          checkMyFatoorah();
+        }, 800); // زيادة الوقت لضمان جاهزية React DOM
+      });
     } catch (err) {
       setError("حدث خطأ أثناء المعالجة");
       console.error(err);
@@ -262,12 +445,30 @@ const Checkout = () => {
       setLoading(true);
       setError("");
 
+      // ✅ استخدام السعر المحفوظ في قاعدة البيانات (يتم قراءته من الباك)
+      // لكن نرسل السعر الحالي أيضاً للتحقق
+      const invoiceValue = typeof finalTotal === 'number' ? finalTotal : parseFloat(finalTotal);
+      
+      if (isNaN(invoiceValue) || invoiceValue <= 0) {
+        console.error("Invalid invoice value:", finalTotal, typeof finalTotal);
+        throw new Error("السعر غير صحيح");
+      }
+
+      // ✅ تسجيل السعر المرسل
+      console.log("Sending payment execution request:", {
+        order_id,
+        invoice_value: invoiceValue,
+        invoice_value_type: typeof invoiceValue,
+        finalTotal_original: finalTotal,
+        finalTotal_type: typeof finalTotal
+      });
+
       const res = await axios.post(
         "https://blomengdalis-tester.com/backend/execute_payment.php",
         {
           sessionId: mfSessionId,
           order_id: order_id,
-          invoice_value: finalTotal,
+          invoice_value: invoiceValue, // إرسال كرقم وليس string
         }
       );
 

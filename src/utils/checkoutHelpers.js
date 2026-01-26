@@ -1,6 +1,6 @@
-// Helper functions for checkout
 
 export const calculateTotals = (cartItems) => {
+  // ✅ حساب السعر الأساسي
   const subtotal = cartItems.reduce((total, item) => {
     const price =
       parseFloat(item.price_after) ||
@@ -10,10 +10,29 @@ export const calculateTotals = (cartItems) => {
     return total + price * item.quantity;
   }, 0);
 
-  const taxAmount = (subtotal * 0.05).toFixed(3);
-  const finalTotal = (subtotal + parseFloat(taxAmount)).toFixed(3);
+  // ✅ حساب الضريبة (5%)
+  const taxAmount = subtotal * 0.05;
+  
+  // ✅ حساب السعر النهائي (بدون تقريب أولاً)
+  const finalTotalRaw = subtotal + taxAmount;
+  
+  // ✅ تقريب لـ 3 منازل عشرية (KWD)
+  const finalTotal = parseFloat(finalTotalRaw.toFixed(3));
+  const taxAmountFormatted = parseFloat(taxAmount.toFixed(3));
 
-  return { subtotal, taxAmount, finalTotal };
+  // ✅ تسجيل للحصول على نفس القيمة دائماً
+  console.log("Price calculation:", {
+    subtotal: subtotal.toFixed(3),
+    taxAmount: taxAmountFormatted,
+    finalTotal: finalTotal,
+    finalTotalString: finalTotal.toFixed(3)
+  });
+
+  return { 
+    subtotal: parseFloat(subtotal.toFixed(3)), 
+    taxAmount: taxAmountFormatted, 
+    finalTotal: finalTotal // رقم وليس string
+  };
 };
 
 export const validateStep1 = (formData, setEmptyFields, setError) => {

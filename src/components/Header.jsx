@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useUser } from "../context/context";
 import { useFavorites } from "../context/FavoritesContext";
+import { useSearch } from "../context/SearchContext";
 import { RiMenu3Line } from "react-icons/ri";
-import { IoMdHeartEmpty } from "react-icons/io";
+import { IoMdHeartEmpty, IoMdClose } from "react-icons/io";
 import { HiOutlineSearch } from "react-icons/hi";
 import CartIcon from "../components/CartIcon";
-
+import "./Header.css"; // سننشئ ملف CSS منفصل
 
 const categories = [
   { label: "تخفيضات", href: "#" },
@@ -33,10 +34,19 @@ const categories = [
 
 const Header = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [setUserRole] = useState(null);
   const { cartCount } = useCart();
   const { user } = useUser();
   const { favoritesCount } = useFavorites();
+  const {
+    searchQuery,
+    setSearchQuery,
+    searchResults,
+    isSearching,
+    clearSearch,
+  } = useSearch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("https://blomengdalis-tester.com/backend/check-session.php")
@@ -48,11 +58,25 @@ const Header = () => {
       });
   }, []);
 
+  const handleSearchToggle = () => {
+    setSearchOpen(!searchOpen);
+    if (searchOpen) {
+      clearSearch();
+    }
+  };
+
+  const handleProductClick = (productId) => {
+    setSearchOpen(false);
+    clearSearch();
+    navigate(`/product/${productId}`);
+  };
+
   return (
     <>
       <header className="bg-white">
         <Container fluid className="py-2 max-w-95">
           <Row className="align-items-center">
+            {/* Desktop Search - يفتح overlay بنفس طريقة الموبايل */}
             <Col
               md={3}
               className="d-none d-md-flex justify-content-start align-items-center border-bottom"
@@ -62,7 +86,14 @@ const Header = () => {
                 <Form.Control
                   type="text"
                   placeholder="بحث..."
-                  style={{ boxShadow: "none", borderRadius: 0, border: "none" }}
+                  onFocus={handleSearchToggle}
+                  readOnly
+                  style={{
+                    boxShadow: "none",
+                    borderRadius: 0,
+                    border: "none",
+                    cursor: "pointer",
+                  }}
                 />
               </Form>
             </Col>
@@ -79,7 +110,7 @@ const Header = () => {
               </Button>
               <Button
                 className="border-0 search-btn bg-transparent text-black"
-                onClick={() => setSidebarOpen(true)}
+                onClick={handleSearchToggle}
               >
                 <HiOutlineSearch size={25} />
               </Button>
@@ -124,12 +155,6 @@ const Header = () => {
               <Link to="/cart" className="position-relative text-black"></Link>
               <CartIcon cartCount={cartCount} />
             </Col>
-
-            {user && user.is_admin === 1 && (
-              <Link to="/admin-dashboard" className="admin-btn">
-                لوحة التحكم
-              </Link>
-            )}
           </Row>
         </Container>
 
@@ -154,6 +179,55 @@ const Header = () => {
           </Container>
         </div>
       </header>
+
+      {/* Search Overlay - موحد للموبايل والويب */}
+      <div className={`search-overlay ${searchOpen ? "open" : ""}`}>
+        <div className="search-header">
+          <Button
+            className="border-0 bg-transparent text-black"
+            onClick={handleSearchToggle}
+          >
+            <IoMdClose size={30} />
+          </Button>
+          <div className="search-input-wrapper">
+            <HiOutlineSearch size={24} className="search-icon" />
+            <input
+              type="text"
+              placeholder="ابحث في بلومينغديلز"
+              className="search-input"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              autoFocus
+            />
+          </div>
+        </div>
+
+        <div className="search-results">
+          {searchQuery && searchResults.length > 0 ? (
+            searchResults.map((product) => (
+              <div
+                key={product.id}
+                onClick={() => handleProductClick(product.id)}
+                className="search-item"
+              >
+                <img
+                  src={`https://blomengdalis-tester.com/backend/uploads/${encodeURIComponent(
+                    product.main_image
+                  )}`}
+                  alt={product.name}
+                  className="search-item-img"
+                />
+                <div className="search-item-info">
+                  <div className="search-item-name">{product.name}</div>
+                  <div className="search-item-desc">{product.description}</div>
+                </div>
+              </div>
+            ))
+          ) : searchQuery ? (
+            <div className="search-empty">لا توجد نتائج</div>
+          ) : null}
+        </div>
+      </div>
 
       {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
