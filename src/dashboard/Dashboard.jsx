@@ -15,7 +15,7 @@ const API_URL = "https://blomengdalis-tester.com/backend";
 
 function F10() {
   const navigate = useNavigate();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, selectedCountry, selectedCurrency } = useCurrency();
   const [activeTab, setActiveTab] = useState("overview");
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -52,9 +52,21 @@ function F10() {
     setLoading(true);
     try {
       const [productsRes, ordersRes, salesRes] = await Promise.all([
-        axios.get(`${API_URL}/get-products.php?all=1`),
-        axios.get(`${API_URL}/get-orders.php`),
-        axios.get(`${API_URL}/get-weekly-sales.php`),
+        axios.get(
+          `${API_URL}/get-products.php?all=1&country=${encodeURIComponent(
+            selectedCountry || ""
+          )}`
+        ),
+        axios.get(
+          `${API_URL}/get-orders.php?country=${encodeURIComponent(
+            selectedCountry || ""
+          )}`
+        ),
+        axios.get(
+          `${API_URL}/get-weekly-sales.php?country=${encodeURIComponent(
+            selectedCountry || ""
+          )}`
+        ),
       ]);
 
       setProducts(productsRes.data);
@@ -73,6 +85,7 @@ function F10() {
     try {
       const response = await axios.post(`${API_URL}/delete-product.php`, {
         id: id,
+        country: selectedCountry || "",
       });
 
       if (response.data.success) {
@@ -87,6 +100,38 @@ function F10() {
     }
   };
 
+  const handleBulkDeleteProducts = async (ids) => {
+    if (!ids || !ids.length) return;
+    if (
+      !window.confirm(
+        `هل أنت متأكد من حذف ${ids.length} منتج/منتجات محددة؟`
+      )
+    )
+      return;
+
+    try {
+      const responses = await Promise.all(
+        ids.map((id) =>
+          axios.post(`${API_URL}/delete-product.php`, {
+            id,
+            country: selectedCountry || "",
+          })
+        )
+      );
+
+      const hasError = responses.some((res) => !res.data?.success);
+      if (hasError) {
+        alert("تم تنفيذ بعض العمليات مع وجود أخطاء في بعضها");
+      } else {
+        alert("تم حذف المنتجات المحددة بنجاح");
+      }
+      fetchData();
+    } catch (error) {
+      console.error("Error bulk deleting products:", error);
+      alert("حدث خطأ أثناء حذف المنتجات المحددة");
+    }
+  };
+
   const handleToggleAvailability = async (id, currentStatus) => {
     const isCurrentlyAvailable =
       currentStatus === "1" || currentStatus === 1 || currentStatus === true;
@@ -97,6 +142,7 @@ function F10() {
         {
           id: id,
           is_available: newStatus,
+          country: selectedCountry || "",
         }
       );
 
@@ -108,6 +154,40 @@ function F10() {
     } catch (error) {
       console.error("Error toggling availability:", error);
       alert("حدث خطأ أثناء تحديث حالة المنتج");
+    }
+  };
+
+  const handleBulkSetAvailability = async (ids, status) => {
+    if (!ids || !ids.length) return;
+    const statusText = status === 1 ? "متوفرة" : "غير متوفرة";
+    if (
+      !window.confirm(
+        `هل أنت متأكد من جعل ${ids.length} منتج/منتجات ${statusText}؟`
+      )
+    )
+      return;
+
+    try {
+      const responses = await Promise.all(
+        ids.map((id) =>
+          axios.post(`${API_URL}/toggle-product-availability.php`, {
+            id,
+            is_available: status,
+            country: selectedCountry || "",
+          })
+        )
+      );
+
+      const hasError = responses.some((res) => !res.data?.success);
+      if (hasError) {
+        alert("تم تحديث بعض المنتجات مع وجود أخطاء في بعضها");
+      } else {
+        alert("تم تحديث حالة المنتجات المحددة بنجاح");
+      }
+      fetchData();
+    } catch (error) {
+      console.error("Error bulk updating availability:", error);
+      alert("حدث خطأ أثناء تحديث حالة توفر المنتجات المحددة");
     }
   };
 
@@ -403,9 +483,19 @@ function F10() {
                 >
                   <Menu className="w-5 h-5 text-gray-700" />
                 </button>
-                <h1 className="text-base sm:text-lg font-semibold text-gray-900">
-                  {getPageTitle()}
-                </h1>
+                <div className="flex flex-col">
+                  <h1 className="text-base sm:text-lg font-semibold text-gray-900">
+                    {getPageTitle()}
+                  </h1>
+                  {selectedCountry && (
+                    <span className="text-[11px] sm:text-xs text-gray-500">
+                      الدولة المختارة من الموقع: {selectedCountry}
+                      {selectedCurrency
+                        ? ` (${selectedCurrency})`
+                        : ""}
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="flex gap-1.5">
@@ -441,6 +531,8 @@ function F10() {
               products={products}
               onDeleteProduct={handleDeleteProduct}
               onToggleAvailability={handleToggleAvailability}
+              onBulkDeleteProducts={handleBulkDeleteProducts}
+              onBulkSetAvailability={handleBulkSetAvailability}
               onRefresh={fetchData}
             />
           )}

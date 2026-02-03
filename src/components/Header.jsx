@@ -11,26 +11,26 @@ import { HiOutlineSearch } from "react-icons/hi";
 import CartIcon from "../components/CartIcon";
 import "./Header.css"; // سننشئ ملف CSS منفصل
 
-const categories = [
-  { label: "تخفيضات", href: "#" },
-  {
-    label: "العطلات بوتيك",
-    href: "https://bloomingdales.com.kw/bloomingdales-resort/",
-  },
-  { label: "حديثاً وصلنا ما", href: "https://bloomingdales.com.kw/new-in/" },
-  { label: "النساء", href: "https://bloomingdales.com.kw/women/" },
-  {
-    label: "الحقائب ",
-    href: "https://bloomingdales.com.kw/bloomingdales-new-season-women/?prefn1=categorytype&prefv1=%D8%AD%D9%82%D8%A7%D8%A6%D8%A8",
-  },
-  { label: "الجمال ", href: "https://bloomingdales.com.kw/beauty/" },
-  { label: "الرجال", href: "https://bloomingdales.com.kw/men/" },
-  { label: "الأطفال", href: "https://bloomingdales.com.kw/kids/" },
-  { label: " مستلزمات المنزل ", href: "https://bloomingdales.com.kw/home/" },
-  { label: "المجوهرات", href: "https://bloomingdales.com.kw/jewelry/" },
-  { label: "الهدايا", href: "https://bloomingdales.com.kw/gifts/" },
-  { label: " المصممون", href: "https://bloomingdales.com.kw/designers/" },
-];
+// const categories = [
+//   { label: "تخفيضات", href: "#" },
+//   {
+//     label: "العطلات بوتيك",
+//     href: "https://bloomingdales.com.kw/bloomingdales-resort/",
+//   },
+//   { label: "حديثاً وصلنا ما", href: "https://bloomingdales.com.kw/new-in/" },
+//   { label: "النساء", href: "https://bloomingdales.com.kw/women/" },
+//   {
+//     label: "الحقائب ",
+//     href: "https://bloomingdales.com.kw/bloomingdales-new-season-women/?prefn1=categorytype&prefv1=%D8%AD%D9%82%D8%A7%D8%A6%D8%A8",
+//   },
+//   { label: "الجمال ", href: "https://bloomingdales.com.kw/beauty/" },
+//   { label: "الرجال", href: "https://bloomingdales.com.kw/men/" },
+//   { label: "الأطفال", href: "https://bloomingdales.com.kw/kids/" },
+//   { label: " مستلزمات المنزل ", href: "https://bloomingdales.com.kw/home/" },
+//   { label: "المجوهرات", href: "https://bloomingdales.com.kw/jewelry/" },
+//   { label: "الهدايا", href: "https://bloomingdales.com.kw/gifts/" },
+//   { label: " المصممون", href: "https://bloomingdales.com.kw/designers/" },
+// ];
 
 const Header = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -102,12 +102,12 @@ const Header = () => {
               xs={4}
               className="d-flex d-md-none justify-content-start align-items-center"
             >
-              <Button
+              {/* <Button
                 className="d-md-none border-0 menu-btn bg-transparent text-black"
                 onClick={() => setSidebarOpen(true)}
               >
                 <RiMenu3Line size={25} />
-              </Button>
+              </Button> */}
               <Button
                 className="border-0 search-btn bg-transparent text-black"
                 onClick={handleSearchToggle}
@@ -163,7 +163,7 @@ const Header = () => {
           <Container style={{ maxWidth: "95%" }} fluid>
             <Row>
               <Col>
-                <nav className="d-flex flex-wrap justify-content-between py-2 header-style">
+                {/* <nav className="d-flex flex-wrap justify-content-between py-2 header-style">
                   {categories.map((cat, idx) => (
                     <a
                       key={idx}
@@ -173,7 +173,7 @@ const Header = () => {
                       {cat.label}
                     </a>
                   ))}
-                </nav>
+                </nav> */}
               </Col>
             </Row>
           </Container>
@@ -230,7 +230,7 @@ const Header = () => {
       </div>
 
       {/* Sidebar */}
-      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+      {/* <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <button className="close-btn" onClick={() => setSidebarOpen(false)}>
           ×
         </button>
@@ -241,7 +241,7 @@ const Header = () => {
             </a>
           ))}
         </nav>
-      </div>
+      </div> */}
       {sidebarOpen && (
         <div className="overlay" onClick={() => setSidebarOpen(false)}></div>
       )}

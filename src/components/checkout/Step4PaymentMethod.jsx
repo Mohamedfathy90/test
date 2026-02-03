@@ -2,11 +2,11 @@ import React from "react";
 import StepCircle from "./StepCircle";
 import CompletedStepSection from "./CompletedStepSection";
 
-import KnetImg from "../../assets/knet-card.svg";
-import PaypalImg from "../../assets/paypal-card.svg";
+import KnetImg from "../../assets/checkout-knet.svg";
+import PaypalImg from "../../assets/checkout-paypal.svg";
 import AmexImg from "../../assets/checkout-creditcard.svg";
-import AppleImg from "../../assets/apple-pay-logo-icon.png";
-import TabbyImg from "../../assets/payment-method-tabby.svg";
+import AppleImg from "../../assets/checkout-applepay.svg";
+import TabbyImg from "../../assets/checkout-tabby.svg";
 
 const Step4PaymentMethod = ({
   formData,
@@ -51,7 +51,7 @@ const Step4PaymentMethod = ({
               <strong>المبنى:</strong> {formData.building}
             </p>
             <p>
-              <strong>الهاتف:</strong>  {formData.phone}
+              <strong>الهاتف:</strong> {formData.phone}
             </p>
           </div>
         )}
@@ -99,17 +99,13 @@ const Step4PaymentMethod = ({
       <div className="space-y-3 mb-6">
         {/* الدفع بواسطة كي نت */}
 
-        <div
-          className="flex items-center gap-3 p-3 border-b border-gray-300  cursor-pointer hover:bg-gray-50"
-          // onClick={() => setSelectedPaymentMethod("KNet")}
-        >
+        <div className="flex items-center gap-3 p-3 border-b border-gray-300  cursor-pointer hover:bg-gray-50">
           <input
             type="radio"
             name="paymentMethod"
             value="KNet"
-            // checked={selectedPaymentMethod === "KNet"}
-            // onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-            className="w-4 h-4 accent-black"
+            className="w-4 h-4 pointer-events-none"
+            disabled
           />
           <img src={KnetImg} alt="K-Net" className="h-6" />
           <label className="flex-1 cursor-pointer text-sm font-medium">
@@ -118,17 +114,13 @@ const Step4PaymentMethod = ({
         </div>
 
         {/* الدفع بواسطة باي بال */}
-        <div
-          className="flex items-center gap-3 p-3 border-b border-gray-300  cursor-pointer hover:bg-gray-50"
-          // onClick={() => setSelectedPaymentMethod("PayPal")}
-        >
+        <div className="flex items-center gap-3 p-3 border-b border-gray-300  cursor-pointer hover:bg-gray-50">
           <input
             type="radio"
             name="paymentMethod"
             value="PayPal"
-            // checked={selectedPaymentMethod === "PayPal"}
-            // onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-            className="w-4 h-4 accent-black"
+            className="w-4 h-4 pointer-events-none"
+            disabled
           />
           <img src={PaypalImg} alt="PayPal" className="h-6" />
           <label className="flex-1 cursor-pointer text-sm font-medium">
@@ -153,17 +145,14 @@ const Step4PaymentMethod = ({
           <img src={AmexImg} alt="Credit Cards" className="h-6" />
         </div>
         {/* Apple Pay */}
-        <div
-          className="flex items-center gap-3 p-3 border-b border-gray-300  cursor-pointer hover:bg-gray-50"
-          onClick={() => setSelectedPaymentMethod("ApplePay")}
-        >
+        <div className="flex items-center gap-3 p-3 border-b border-gray-300  cursor-pointer hover:bg-gray-50">
           <input
             type="radio"
             name="paymentMethod"
             value="ApplePay"
             checked={selectedPaymentMethod === "ApplePay"}
-            onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-            className="w-4 h-4 accent-black"
+            className="w-4 h-4 pointer-events-none"
+            disabled
           />
           <img src={AppleImg} alt="Apple Pay" className="h-6" />
           <label className="flex-1 cursor-pointer text-sm font-medium">
@@ -174,15 +163,13 @@ const Step4PaymentMethod = ({
         {/* الدفع عند الاستلام */}
         <div
           className="flex items-center gap-3 p-3 border-b border-gray-300  cursor-pointer hover:bg-gray-50"
-          // onClick={() => setSelectedPaymentMethod("COD")}
         >
           <input
             type="radio"
             name="paymentMethod"
             value="COD"
-            // checked={selectedPaymentMethod === "COD"}
-            // onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-            className="w-4 h-4 accent-black"
+            className="w-4 h-4 pointer-events-none"
+            disabled
           />
           <img src={TabbyImg} alt="Tabby" className="h-6" />
           <label className="flex-1 cursor-pointer text-sm font-medium">

@@ -18,10 +18,20 @@ import {
   clearPaymentContainers,
 } from "../utils/checkoutHelpers";
 
+// خريطة أرقام الاتصال بحسب الدولة المختارة من CurrencyContext
+const COUNTRY_PHONE_CODE_MAP = {
+  الكويت: "+965",
+  الإمارات: "+971",
+  السعودية: "+966",
+  عمان: "+968",
+  البحرين: "+973",
+  قطر: "+974",
+};
+
 const Checkout = () => {
   const location = useLocation();
   const sessionId = getSessionId();
-  const { selectedCurrency, convertPrice } = useCurrency();
+  const { selectedCountry } = useCurrency();
 
   const cartItems = location.state?.cartItems || [];
 
@@ -49,6 +59,18 @@ const Checkout = () => {
     nationalId: "",
     title: "mr",
   });
+
+  // مزامنة الدولة ورمز الهاتف مع الدولة المختارة من CurrencyPopup / CurrencyContext
+  useEffect(() => {
+    if (!selectedCountry) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      country: selectedCountry,
+      countryCode:
+        COUNTRY_PHONE_CODE_MAP[selectedCountry] || prev.countryCode || "+965",
+    }));
+  }, [selectedCountry]);
 
   // Calculate totals
   const { subtotal, taxAmount, finalTotal } = calculateTotals(cartItems);
@@ -147,7 +169,7 @@ const Checkout = () => {
         country_code: formData.countryCode,
         national_id: formData.nationalId,
         title: formData.title,
-        total_price: totalPrice, // إرسال كرقم وليس string
+        total_price: totalPrice, 
         items,
       };
 
