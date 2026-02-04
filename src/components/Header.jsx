@@ -73,7 +73,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white">
+      <header className="bg-white sticky-header">
         <Container fluid className="py-2 max-w-95">
           <Row className="align-items-center">
             {/* Desktop Search - يفتح overlay بنفس طريقة الموبايل */}
