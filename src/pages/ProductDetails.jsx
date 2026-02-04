@@ -7,7 +7,7 @@ import { useCart } from "../context/CartContext";
 import { useNotification } from "../context/NotificationContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { Link } from "react-router-dom";
-import { getSessionId } from "../utils/SessionId"; 
+import { getSessionId } from "../utils/SessionId";
 
 const AccordionItem = ({ title, children, isOpen, onToggle }) => {
   return (
@@ -53,7 +53,7 @@ const ProductDetail = () => {
   }, [product]);
 
   const addToCart = async () => {
-    const sessionId = getSessionId(); 
+    const sessionId = getSessionId();
     try {
       const response = await axios.post(
         "https://blomengdalis-tester.com/backend/add_to_cart.php",
@@ -89,18 +89,18 @@ const ProductDetail = () => {
   };
 
 
- if (!product) return <Loader />;
+  if (!product) return <Loader />;
 
 
   return (
     <div>
-      <div className="product-detail container max-w-screen-xl max-w-95 py-8 md:py-12">
+      <div className="product-detail container max-w-screen-xl max-w-95 pt-0 pb-8 md:py-12 md:mt-[50px]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-start">
-          <div className="w-full bg-gray-50 flex justify-center items-center p-0 md:p-5 min-h-[400px] md:min-h-[600px]">
+          <div className="w-full bg-gray-50 flex justify-center items-center p-0 md:p-5 h-[50vh] md:h-auto md:min-h-[600px]">
             <img
               src={`https://blomengdalis-tester.com/backend/uploads/${product.main_image}`}
               alt={product.name}
-              className="w-full md:max-w-full md:max-h-full object-contain md:object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
 
@@ -110,7 +110,7 @@ const ProductDetail = () => {
             <span className="Sali inline-block">الأكثر مبيعاً</span>
 
             {product.discount_percent &&
-            parseFloat(product.discount_percent) > 0 ? (
+              parseFloat(product.discount_percent) > 0 ? (
               <div>
                 <div className="discount-label">خصومات</div>
                 <div className="price-main mb-2">
